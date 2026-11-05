@@ -6,6 +6,16 @@ Drop-in operating instructions for coding agents. Read this file before every ta
 
 `SPEC.md` in the repository root is the project contract — read it for what WinUtil is and how it's architected. This file covers how to work on it.
 
+
+## 0.1 Read-after-this First
+
+If the task touches application removal, read these before editing anything:
+- `context/remove-apps.md` — project context and the verified removal master.
+- `skills/remove-apps/SKILL.md` — the fast app-removal workflow (exact steps, caveats, verification).
+
+Apps live in `config/applications.json` + `config/icons/` and are read by the script at runtime, so never edit `functions/`. PowerShell (Pester, Script Analyzer, `Compile.ps1`) is not available on this host.
+
+
 ## 0. Non-Negotiables
 
 These rules override everything else in this file when in conflict:
