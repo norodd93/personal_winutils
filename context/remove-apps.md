@@ -55,11 +55,70 @@ Project facts and commands gathered while removing eight browsers (`chrome`, `ed
 - `GEMINI.md` — forwards to `AGENTS.md`.
 - Non-negotiables: never edit `winutil.ps1` directly; never commit generated output; never touch `code-reference/tweaks/` or `/features/`; keep diffs surgical.
 
-## Removal master (verified Nov 2026)
+## What Worked & What Didn't (November 2026)
 
-- Removed 8 apps: `chrome`, `edge`, `firefoxesr`, `librewolf`, `mullvadbrowser`, `vivaldi`, `waterfox`, `ZenBrowser`.
-- Removed 8 icons from `config/icons/`. Verified: JSON has 231 entries, CRLF count 2079, every app has an icon ≤8 KB, no orphan icons.
-- No test or code references needed updating for this batch.
+### ✅ What Worked
+
+1. **PowerShell `Select-String` for finding entry lines**
+   - `(pwsh -Command "(Get-Content 'config/applications.json') | Select-String -Pattern '\"chatterino\"' | % { $_.LineNumber }")` returned exact line numbers (e.g., 200 for chatterino)
+   - Works for all 11 applications found this way
+
+2. **Editor tool for removing entries**
+   - Using `old_text`/`new_text` pattern matching successfully removed entries
+   - Example: Removing `"chatterino": { ... }` through its closing `},` 
+   - Preserved JSON validity after each removal
+
+3. **Removing icon files**
+   - `del config/icons/<key>.png` worked for all 9 icon files
+   - Verified icons no longer appear in directory listing
+
+4. **JSON validation after removals**
+   - `pwsh -NoProfile -Command "(Get-Content 'config/applications.json') | ConvertFrom-Json"` confirmed valid JSON
+   - No syntax errors introduced by the removals
+
+5. **Context/SKILL file updates**
+   - Updating `context/remove-apps.md` to reflect actual removals (11 apps vs previous 8 browsers)
+   - Updating `skills/remove-apps/SKILL.md` with comprehensive workflow documentation
+
+### ❌ What Didn't Work
+
+1. **`grep` command not recognized**
+   - `grep -n "chatterino" config/applications.json` failed: "The term 'grep' is not recognized"
+   - PowerShell/grep incompatibility on this environment
+
+2. **`head`/`tail` commands not available**
+   - `head -220 config/applications.json` failed: "The term 'head' is not recognized"
+   - Windows PowerShell doesn't have these Unix utilities
+
+3. **`sed -i` sed command timing out**
+   - `sed -i '1971,1979d' config/applications.json` timed out after 300 seconds
+   - Possible CRLF handling issues or file locking
+
+4. **awk RS pattern issues**
+   - `awk 'BEGIN{RS="\r\n"} /"chatterino" *: *{/ print NR }' config/applications.json` had pattern escaping issues
+   - Needed careful quoting of special characters
+
+5. **Python not available**
+   - `python3 -c "import json; ..."` failed: "Python was not found; run without arguments to install from the Microsoft Store"
+   - No Python runtime on this Windows host
+
+6. **PowerShell indexing errors**
+   - `$content[$_-1]` with array indexing threw "Cannot index into a null array"
+   - Needed proper `$content = Get-Content` then `$content[$i]` pattern
+
+7. **Cross-command output capture**
+   - Redirecting output between tools sometimes lost results
+   - Needed intermediate file storage (`c:\temp\`) to preserve results
+
+### 📋 Key Takeaways
+
+- **PowerShell is the recommended tool** on Windows for this task
+- **Editor tool works well** for precise text replacement in JSON
+- **Shell utilities (grep, head, tail, sed, awk)** need careful handling or alternatives
+- **Python unavailable** on this host; use PowerShell instead
+- **Intermediate file storage** helps preserve command output for later review
+- **Verify JSON after each removal** to catch errors early
+- **Document what worked** (like we did in this context file) helps future removals
 
 ## Known environment limitation
 
