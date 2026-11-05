@@ -206,15 +206,6 @@
         "winget": "ChatterinoTeam.Chatterino",
         "foss": true
     },
-    "chrome": {
-        "category": "Browsers",
-        "choco": "googlechrome",
-        "content": "Chrome",
-        "description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
-        "link": "https://www.google.com/chrome/",
-        "winget": "Google.Chrome",
-        "foss": false
-    },
     "chromium": {
         "category": "Browsers",
         "choco": "chromium",
@@ -422,15 +413,6 @@
         "winget": "File-New-Project.EarTrumpet",
         "foss": true
     },
-    "edge": {
-        "category": "Browsers",
-        "choco": "microsoft-edge",
-        "content": "Edge",
-        "description": "Microsoft Edge is a modern web browser built on Chromium, offering performance, security, and integration with Microsoft services.",
-        "link": "https://www.microsoft.com/edge",
-        "winget": "Microsoft.Edge",
-        "foss": false
-    },
     "es-de": {
         "category": "Games",
         "choco": "",
@@ -484,15 +466,6 @@
         "description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions.",
         "link": "https://www.mozilla.org/en-US/firefox/new/",
         "winget": "Mozilla.Firefox",
-        "foss": true
-    },
-    "firefoxesr": {
-        "category": "Browsers",
-        "choco": "FirefoxESR",
-        "content": "Firefox ESR",
-        "description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks.",
-        "link": "https://www.mozilla.org/en-US/firefox/enterprise/",
-        "winget": "Mozilla.Firefox.ESR",
         "foss": true
     },
     "floorp": {
@@ -864,15 +837,6 @@
         "winget": "TheDocumentFoundation.LibreOffice",
         "foss": true
     },
-    "librewolf": {
-        "category": "Browsers",
-        "choco": "librewolf",
-        "content": "LibreWolf",
-        "description": "LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements.",
-        "link": "https://librewolf.net/",
-        "winget": "LibreWolf.LibreWolf",
-        "foss": true
-    },
     "localsend": {
         "category": "Selfhosted Tools",
         "choco": "localsend.install",
@@ -969,15 +933,6 @@
         "description": "This is the VPN client software for the Mullvad VPN service.",
         "link": "https://mullvad.net/",
         "winget": "MullvadVPN.MullvadVPN",
-        "foss": true
-    },
-    "mullvadbrowser": {
-        "category": "Browsers",
-        "choco": "na",
-        "content": "Mullvad Browser",
-        "description": "Mullvad Browser is a privacy-focused web browser, developed in partnership with the Tor Project.",
-        "link": "https://mullvad.net/browser",
-        "winget": "MullvadVPN.MullvadBrowser",
         "foss": true
     },
     "nomacs": {
@@ -1887,15 +1842,6 @@
         "winget": "Microsoft.VisualStudio.Community",
         "foss": false
     },
-    "vivaldi": {
-        "category": "Browsers",
-        "choco": "vivaldi",
-        "content": "Vivaldi",
-        "description": "Vivaldi is a highly customizable web browser with a focus on user personalization and productivity features.",
-        "link": "https://vivaldi.com/",
-        "winget": "Vivaldi.Vivaldi",
-        "foss": false
-    },
     "vlc": {
         "category": "Multimedia Tools",
         "choco": "vlc",
@@ -1930,15 +1876,6 @@
         "description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft's VS Code.",
         "link": "https://vscodium.com/",
         "winget": "VSCodium.VSCodium",
-        "foss": true
-    },
-    "waterfox": {
-        "category": "Browsers",
-        "choco": "waterfox",
-        "content": "Waterfox",
-        "description": "Waterfox is a fast, privacy-focused web browser based on Firefox, designed to preserve user choice and privacy.",
-        "link": "https://www.waterfox.net/",
-        "winget": "Waterfox.Waterfox",
         "foss": true
     },
     "whatsapp": {
@@ -2082,15 +2019,6 @@
         "description": "GUI Tool to remove ads from various places around Windows 11",
         "link": "https://github.com/xM4ddy/OFGB",
         "winget": "xM4ddy.OFGB",
-        "foss": true
-    },
-    "ZenBrowser": {
-        "category": "Browsers",
-        "choco": "na",
-        "content": "Zen Browser",
-        "description": "The modern, privacy-focused, performance-driven browser built on Firefox.",
-        "link": "https://zen-browser.app/",
-        "winget": "Zen-Team.Zen-Browser",
         "foss": true
     },
     "Zed": {
