@@ -197,23 +197,14 @@
         "winget": "msstore:9NT1R1C2HH7J",
         "foss": false
     },
-    "chatterino": {
-        "category": "Communications",
-        "choco": "chatterino",
-        "content": "Chatterino",
-        "description": "Chatterino is a chat client for Twitch chat that offers a clean and customizable interface for a better streaming experience.",
-        "link": "https://www.chatterino.com/",
-        "winget": "ChatterinoTeam.Chatterino",
-        "foss": true
-    },
-    "chromium": {
+    "chrome": {
         "category": "Browsers",
-        "choco": "chromium",
-        "content": "Chromium",
-        "description": "Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome.",
-        "link": "https://www.chromium.org/",
-        "winget": "Hibbiki.Chromium",
-        "foss": true
+        "choco": "googlechrome",
+        "content": "Chrome",
+        "description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
+        "link": "https://www.google.com/chrome/",
+        "winget": "Google.Chrome",
+        "foss": false
     },
     "cinebenchr23": {
         "category": "Pro Tools",
@@ -863,15 +854,6 @@
         "winget": "shinchiro.mpv",
         "foss": true
     },
-    "matrix": {
-        "category": "Communications",
-        "choco": "element-desktop",
-        "content": "Element",
-        "description": "Element is a client for Matrix; an open network for secure, decentralized communication.",
-        "link": "https://element.io/",
-        "winget": "Element.Element",
-        "foss": true
-    },
     "minitoolpartitionwizard": {
         "category": "Utilities",
         "choco": "partitionwizard",
@@ -1411,15 +1393,6 @@
       "winget": "pbek.QOwnNotes",
       "foss": true  
     },
-    "qtox": {
-        "category": "Communications",
-        "choco": "qtox",
-        "content": "QTox",
-        "description": "QTox is a free and open-source messaging app that prioritizes user privacy and security in its design.",
-        "link": "https://qtox.github.io/",
-        "winget": "Tox.qTox",
-        "foss": true
-    },
     "revo": {
         "category": "Utilities",
         "choco": "revo-uninstaller",
@@ -1528,15 +1501,6 @@
         "winget": "Henry++.simplewall",
         "foss": true
     },
-    "slack": {
-        "category": "Communications",
-        "choco": "slack",
-        "content": "Slack",
-        "description": "Slack is a collaboration hub that connects teams and facilitates communication through channels, messaging, and file sharing.",
-        "link": "https://slack.com/",
-        "winget": "SlackTechnologies.Slack",
-        "foss": false
-    },
     "startallback": {
         "category": "Utilities",
         "choco": "StartAllBack",
@@ -1624,15 +1588,6 @@
         "description": "SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system.",
         "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview",
         "winget": "Microsoft.Sysinternals.TCPView",
-        "foss": false
-    },
-    "teams": {
-        "category": "Communications",
-        "choco": "microsoft-teams",
-        "content": "Teams",
-        "description": "Microsoft Teams is a collaboration platform that integrates with Office 365 and offers chat, video conferencing, file sharing, and more.",
-        "link": "https://www.microsoft.com/en-us/microsoft-teams/group-chat-software",
-        "winget": "Microsoft.Teams",
         "foss": false
     },
     "teamviewer": {
