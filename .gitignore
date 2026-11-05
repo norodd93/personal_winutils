@@ -17,3 +17,7 @@ __pycache__/
 .vscode/
 .vs/
 .idea/
+
+
+ # personal additions
+ PERSONAL_README.txt
