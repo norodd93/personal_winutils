@@ -26,15 +26,7 @@
         "winget": "amir1376.ABDownloadManager",
         "foss": true
     },
-    "adobe": {
-        "category": "Document",
-        "choco": "adobereader",
-        "content": "Adobe Acrobat Reader",
-        "description": "Adobe Acrobat Reader is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents.",
-        "link": "https://www.adobe.com/acrobat/pdf-reader.html",
-        "winget": "Adobe.Acrobat.Reader.64-bit",
-        "foss": false
-    },
+
     "advancedip": {
         "category": "Pro Tools",
         "choco": "advanced-ip-scanner",
@@ -143,15 +135,7 @@
         "winget": "Brave.Brave",
         "foss": true
     },
-    "bruno": {
-        "category": "Development",
-        "choco": "bruno",
-        "content": "Bruno",
-        "description": "Bruno is a local-first API client that stores collections as plain text files for version control and collaboration.",
-        "link": "https://www.usebruno.com/",
-        "winget": "Bruno.Bruno",
-        "foss": true
-    },
+
     "bulkcrapuninstaller": {
         "category": "Utilities",
         "choco": "bulk-crap-uninstaller",
@@ -188,15 +172,7 @@
         "winget": "Cemu.Cemu",
         "foss": true
     },
-    "chatgpt": {
-        "category": "Development",
-        "choco": "na",
-        "content": "ChatGPT Desktop",
-        "description": "The official ChatGPT desktop app for Windows, distributed through the Microsoft Store.",
-        "link": "https://openai.com/chatgpt/download/",
-        "winget": "msstore:9NT1R1C2HH7J",
-        "foss": false
-    },
+
     "chrome": {
         "category": "Browsers",
         "choco": "googlechrome",
@@ -224,15 +200,7 @@
         "winget": "Anthropic.Claude",
         "foss": false
     },
-    "claude-code": {
-        "category": "Development",
-        "choco": "claude-code",
-        "content": "Claude Code",
-        "description": "Anthropic's agentic coding tool for terminal and IDE development workflows.",
-        "link": "https://code.claude.com/",
-        "winget": "Anthropic.ClaudeCode",
-        "foss": false
-    },
+
     "cmake": {
         "category": "Development",
         "choco": "cmake",
@@ -341,42 +309,10 @@
         "winget": "Docker.DockerDesktop",
         "foss": false
     },
-    "dotnet6": {
-        "category": "Microsoft Tools",
-        "choco": "dotnet-6.0-runtime",
-        "content": ".NET Desktop Runtime 6",
-        "description": ".NET Desktop Runtime 6 is a runtime environment required for running applications developed with .NET 6.",
-        "link": "https://dotnet.microsoft.com/download/dotnet/6.0",
-        "winget": "Microsoft.DotNet.DesktopRuntime.6",
-        "foss": true
-    },
-    "dotnet8": {
-        "category": "Microsoft Tools",
-        "choco": "dotnet-8.0-runtime",
-        "content": ".NET Desktop Runtime 8",
-        "description": ".NET Desktop Runtime 8 is a runtime environment required for running applications developed with .NET 8.",
-        "link": "https://dotnet.microsoft.com/download/dotnet/8.0",
-        "winget": "Microsoft.DotNet.DesktopRuntime.8",
-        "foss": true
-    },
-    "dotnet9": {
-        "category": "Microsoft Tools",
-        "choco": "dotnet-9.0-runtime",
-        "content": ".NET Desktop Runtime 9",
-        "description": ".NET Desktop Runtime 9 is a runtime environment required for running applications developed with .NET 9.",
-        "link": "https://dotnet.microsoft.com/download/dotnet/9.0",
-        "winget": "Microsoft.DotNet.DesktopRuntime.9",
-        "foss": true
-    },
-    "dotnet10": {
-        "category": "Microsoft Tools",
-        "choco": "dotnet-10.0-runtime",
-        "content": ".NET Desktop Runtime 10",
-        "description": ".NET Desktop Runtime 10 is a runtime environment required for running applications developed with .NET 10.",
-        "link": "https://dotnet.microsoft.com/download/dotnet/10.0",
-        "winget": "Microsoft.DotNet.DesktopRuntime.10",
-        "foss": true
-    },
+
+
+
+
     "dropbox": {
         "category": "Utilities",
         "choco": "dropbox",
@@ -386,15 +322,7 @@
         "winget": "Dropbox.Dropbox",
         "foss": false
     },
-    "eaapp": {
-        "category": "Games",
-        "choco": "ea-app",
-        "content": "EA App",
-        "description": "EA App is a platform for accessing and playing Electronic Arts games.",
-        "link": "https://www.ea.com/ea-app",
-        "winget": "ElectronicArts.EADesktop",
-        "foss": false
-    },
+
     "eartrumpet": {
         "category": "Multimedia Tools",
         "choco": "eartrumpet",
@@ -486,33 +414,9 @@
         "winget": "PeterPawlowski.foobar2000",
         "foss": false
     },
-    "fnm": {
-        "category": "Development",
-        "choco": "fnm",
-        "content": "Fast Node Manager",
-        "description": "Fast Node Manager (fnm) is a fast, cross-platform tool for installing and switching between Node.js versions.",
-        "link": "https://github.com/Schniz/fnm",
-        "winget": "Schniz.fnm",
-        "foss": true
-    },
-    "foxpdfreader": {
-        "category": "Document",
-        "choco": "foxitreader",
-        "content": "Foxit PDF Reader",
-        "description": "Foxit PDF Reader is a free PDF viewer with a familiar ribbon-style interface.",
-        "link": "https://www.foxit.com/pdf-reader/",
-        "winget": "Foxit.FoxitReader",
-        "foss": false
-    },
-    "geforcenow": {
-        "category": "Games",
-        "choco": "nvidia-geforce-now",
-        "content": "GeForce NOW",
-        "description": "GeForce NOW is a cloud gaming service that allows you to play high-quality PC games on your device.",
-        "link": "https://www.nvidia.com/en-us/geforce-now/",
-        "winget": "Nvidia.GeForceNow",
-        "foss": false
-    },
+
+
+
     "gimp": {
         "category": "Multimedia Tools",
         "choco": "gimp",
@@ -567,15 +471,7 @@
         "winget": "GOG.Galaxy",
         "foss": false
     },
-    "golang": {
-        "category": "Development",
-        "choco": "golang",
-        "content": "Go",
-        "description": "Go (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
-        "link": "https://go.dev/",
-        "winget": "GoLang.Go",
-        "foss": true
-    },
+
     "googledrive": {
         "category": "Utilities",
         "choco": "googledrive",
@@ -612,15 +508,7 @@
         "winget": "ImputNet.Helium",
         "foss": true
     },
-    "hugo": {
-        "category": "Development",
-        "choco": "hugo-extended",
-        "content": "Hugo",
-        "description": "The world's fastest framework for building websites.",
-        "link": "https://gohugo.io",
-        "winget": "Hugo.Hugo.Extended",
-        "foss": true
-    },
+
     "handbrake": {
         "category": "Multimedia Tools",
         "choco": "handbrake",
@@ -693,15 +581,7 @@
         "winget": "IrfanSkiljan.IrfanView",
         "foss": false
     },
-    "itch": {
-        "category": "Games",
-        "choco": "itch",
-        "content": "Itch.io",
-        "description": "Itch.io is a digital distribution platform for indie games and creative projects.",
-        "link": "https://itch.io/",
-        "winget": "ItchIo.Itch",
-        "foss": true
-    },
+
     "itunes": {
         "category": "Multimedia Tools",
         "choco": "itunes",
@@ -711,33 +591,9 @@
         "winget": "Apple.iTunes",
         "foss": false
     },
-    "java8": {
-        "category": "Development",
-        "choco": "corretto8jdk",
-        "content": "Amazon Corretto 8 (LTS)",
-        "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
-        "link": "https://aws.amazon.com/corretto",
-        "winget": "Amazon.Corretto.8.JDK",
-        "foss": true
-    },
-    "java21": {
-        "category": "Development",
-        "choco": "corretto21jdk",
-        "content": "Amazon Corretto 21 (LTS)",
-        "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
-        "link": "https://aws.amazon.com/corretto",
-        "winget": "Amazon.Corretto.21.JDK",
-        "foss": true
-    },
-    "java25": {
-        "category": "Development",
-        "choco": "corretto25jdk",
-        "content": "Amazon Corretto 25 (LTS)",
-        "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
-        "link": "https://aws.amazon.com/corretto",
-        "winget": "Amazon.Corretto.25.JDK",
-        "foss": true
-    },
+
+
+
     "jellyfinmediaplayer": {
         "category": "Selfhosted Tools",
         "choco": "jellyfin-media-player",
@@ -756,15 +612,7 @@
         "winget": "Jellyfin.Server",
         "foss": true
     },
-    "jetbrains": {
-        "category": "Development",
-        "choco": "jetbrainstoolbox",
-        "content": "Jetbrains Toolbox",
-        "description": "Jetbrains Toolbox is a platform for easy installation and management of JetBrains developer tools.",
-        "link": "https://www.jetbrains.com/toolbox/",
-        "winget": "JetBrains.Toolbox",
-        "foss": false
-    },
+
     "jpegview": {
         "category": "Utilities",
         "choco": "jpegview",
@@ -774,15 +622,7 @@
         "winget": "sylikc.JPEGView",
         "foss": true
     },
-    "joplin": {
-        "category": "Document",
-        "choco": "joplin",
-        "content": "Joplin",
-        "description": "Joplin is an open-source note-taking and to-do application with synchronization capabilities.",
-        "link": "https://joplinapp.org/",
-        "winget": "Joplin.Joplin",
-        "foss": true
-    },
+
     "keepassxc": {
         "category": "Utilities",
         "choco": "keepassxc",
@@ -819,15 +659,7 @@
         "winget": "JesseDuffield.lazygit",
         "foss": true
     },
-    "libreoffice": {
-        "category": "Document",
-        "choco": "libreoffice-fresh",
-        "content": "LibreOffice",
-        "description": "LibreOffice is a powerful and free office suite, compatible with other major office suites.",
-        "link": "https://www.libreoffice.org/",
-        "winget": "TheDocumentFoundation.LibreOffice",
-        "foss": true
-    },
+
     "localsend": {
         "category": "Selfhosted Tools",
         "choco": "localsend.install",
@@ -863,15 +695,7 @@
         "winget": "MiniTool.PartitionWizard.Free",
         "foss": false
     },
-    "modrinth": {
-        "category": "Games",
-        "choco": "modrinth-app",
-        "content": "Modrinth App",
-        "description": "Modrinth App is a desktop application for managing Minecraft mods and modpacks.",
-        "link": "https://modrinth.com/app",
-        "winget": "Modrinth.ModrinthApp",
-        "foss": true
-    },
+
     "moonlight": {
         "category": "Selfhosted Tools",
         "choco": "moonlight-qt",
@@ -953,24 +777,8 @@
         "winget": "Tailscale.Tailscale",
         "foss": false
     },
-    "naps2": {
-        "category": "Document",
-        "choco": "naps2",
-        "content": "NAPS2 (Scanner)",
-        "description": "NAPS2 is a document scanning application that simplifies the process of creating electronic documents.",
-        "link": "https://www.naps2.com/",
-        "winget": "Cyanfish.NAPS2",
-        "foss": true
-    },
-    "neovim": {
-        "category": "Development",
-        "choco": "neovim",
-        "content": "Neovim",
-        "description": "Neovim is a highly extensible text editor and an improvement over the original Vim editor.",
-        "link": "https://neovim.io/",
-        "winget": "Neovim.Neovim",
-        "foss": true
-    },
+
+
     "nextclouddesktop": {
         "category": "Selfhosted Tools",
         "choco": "nextcloud-client",
@@ -998,41 +806,10 @@
         "winget": "OpenJS.NodeJS",
         "foss": true
     },
-    "nodejslts": {
-        "category": "Development",
-        "choco": "nodejs-lts",
-        "content": "NodeJS LTS",
-        "description": "NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development.",
-        "link": "https://nodejs.org/",
-        "winget": "OpenJS.NodeJS.LTS",
-        "foss": true
-    },
-    "pnpm": {
-    "category": "Development",
-    "content": "pnpm",
-    "description": "pnpm is a fast and disk space efficient package manager for JavaScript and Node.js applications.",
-    "link": "https://pnpm.io/",
-    "winget": "pnpm.pnpm",
-    "foss": true
-    },
-    "notepadplus": {
-        "category": "Development",
-        "choco": "notepadplusplus",
-        "content": "Notepad++",
-        "description": "Notepad++ is a free, open-source code editor and Notepad replacement with support for multiple languages.",
-        "link": "https://notepad-plus-plus.org/",
-        "winget": "Notepad++.Notepad++",
-        "foss": true
-    },
-    "nuget": {
-        "category": "Microsoft Tools",
-        "choco": "nuget.commandline",
-        "content": "NuGet",
-        "description": "NuGet is a package manager for the .NET framework, enabling developers to manage and share libraries in their .NET applications.",
-        "link": "https://www.nuget.org/",
-        "winget": "Microsoft.NuGet",
-        "foss": true
-    },
+
+
+
+
     "nvclean": {
         "category": "Utilities",
         "choco": "na",
@@ -1060,33 +837,9 @@
         "winget": "Obsidian.Obsidian",
         "foss": false
     },
-    "okular": {
-        "category": "Document",
-        "choco": "okular",
-        "content": "Okular",
-        "description": "Okular is a versatile document viewer with advanced features.",
-        "link": "https://okular.kde.org/",
-        "winget": "KDE.Okular",
-        "foss": true
-    },
-    "onedrive": {
-        "category": "Microsoft Tools",
-        "choco": "onedrive",
-        "content": "OneDrive",
-        "description": "OneDrive is a cloud storage service provided by Microsoft, allowing users to store and share files securely across devices.",
-        "link": "https://onedrive.live.com/",
-        "winget": "Microsoft.OneDrive",
-        "foss": false
-    },
-    "onlyoffice": {
-        "category": "Document",
-        "choco": "onlyoffice",
-        "content": "ONLYOFFICE Desktop",
-        "description": "ONLYOFFICE Desktop is a comprehensive office suite for document editing and collaboration.",
-        "link": "https://www.onlyoffice.com/desktop.aspx",
-        "winget": "ONLYOFFICE.DesktopEditors",
-        "foss": true
-    },
+
+
+
     "OPAutoClicker": {
         "category": "Utilities",
         "choco": "autoclicker",
@@ -1177,51 +930,11 @@
         "winget": "Giorgiotani.Peazip",
         "foss": true
     },
-    "pdf-xchange": {
-        "category": "Document",
-        "choco": "pdfxchangeeditor",
-        "content": "PDF-XChange Editor",
-        "description": "A comprehensive Windows-based software suite and editor for creating, viewing, editing, annotating, and signing PDF files.",
-        "link": "https://www.pdf-xchange.com/",
-        "winget": "TrackerSoftware.PDF-XChangeEditor",
-        "foss": false
-    },
-    "pdf24creator": {
-        "category": "Document",
-        "choco": "pdf24",
-        "content": "PDF24 Creator",
-        "description": "Free and easy-to-use online/desktop PDF tools that make you more productive",
-        "link": "https://tools.pdf24.org/en/creator",
-        "winget": "geeksoftwareGmbH.PDF24Creator",
-        "foss": false
-    },
-    "pdfgear": {
-        "category": "Document",
-        "choco": "pdfgear",
-        "content": "PDFgear",
-        "description": "PDFgear is a piece of full-featured PDF management software for Windows, macOS, and mobile, and it's completely free to use.",
-        "link": "https://www.pdfgear.com/",
-        "winget": "PDFgear.PDFgear",
-        "foss": false
-    },
-    "pdfsam": {
-        "category": "Document",
-        "choco": "pdfsam",
-        "content": "PDFsam Basic",
-        "description": "PDFsam Basic is a free and open-source tool for splitting, merging, and rotating PDF files.",
-        "link": "https://pdfsam.org/",
-        "winget": "PDFsam.PDFsam",
-        "foss": true
-    },
-    "playnite": {
-        "category": "Games",
-        "choco": "playnite",
-        "content": "Playnite",
-        "description": "Playnite is an open-source video game library manager with one simple goal: To provide a unified interface for all of your games.",
-        "link": "https://playnite.link/",
-        "winget": "Playnite.Playnite",
-        "foss": true
-    },
+
+
+
+
+
     "plex": {
         "category": "Selfhosted Tools",
         "choco": "plexmediaserver",
@@ -1240,24 +953,8 @@
         "winget": "Plex.Plex",
         "foss": false
     },
-    "posh": {
-        "category": "Development",
-        "choco": "oh-my-posh",
-        "content": "Oh My Posh (Prompt)",
-        "description": "Oh My Posh is a cross-platform prompt theme engine for any shell.",
-        "link": "https://ohmyposh.dev/",
-        "winget": "JanDeDobbeleer.OhMyPosh",
-        "foss": true
-    },
-    "postman": {
-        "category": "Development",
-        "choco": "postman",
-        "content": "Postman",
-        "description": "Postman is an API platform and desktop client for designing, testing, documenting, and collaborating on APIs.",
-        "link": "https://www.postman.com/downloads/",
-        "winget": "Postman.Postman",
-        "foss": false
-    },
+
+
     "powershell": {
         "category": "Microsoft Tools",
         "choco": "powershell-core",
@@ -1276,15 +973,7 @@
         "winget": "Microsoft.PowerToys",
         "foss": true
     },
-    "prismlauncher": {
-        "category": "Games",
-        "choco": "prismlauncher",
-        "content": "Prism Launcher",
-        "description": "Prism Launcher is an open-source Minecraft launcher with the ability to manage multiple instances, accounts, and mods.",
-        "link": "https://prismlauncher.org/",
-        "winget": "PrismLauncher.PrismLauncher",
-        "foss": true
-    },
+
     "processlasso": {
         "category": "Utilities",
         "choco": "plasso",
@@ -1384,15 +1073,7 @@
         "winget": "qBittorrent.qBittorrent",
         "foss": true
     },
-    "qownnotes": {
-      "category": "Document",
-      "choco": "qownnotes",
-      "content": "QOwnNotes",
-      "description": "QOwnNotes is a free open-source note-taking app with Nextcloud/ownCloud integration.",
-      "link": "https://www.qownnotes.org/",
-      "winget": "pbek.QOwnNotes",
-      "foss": true  
-    },
+
     "revo": {
         "category": "Utilities",
         "choco": "revo-uninstaller",
@@ -1420,15 +1101,7 @@
         "winget": "Rufus.Rufus",
         "foss": true
     },
-    "rustlang": {
-        "category": "Development",
-        "choco": "rust",
-        "content": "Rust",
-        "description": "Rust is a programming language designed for safety and performance, particularly focused on systems programming.",
-        "link": "https://www.rust-lang.org/",
-        "winget": "Rustlang.Rust.MSVC",
-        "foss": true
-    },
+
     "sdio": {
         "category": "Utilities",
         "choco": "sdio",
@@ -1483,15 +1156,7 @@
         "winget": "WhirlwindFX.SignalRgb",
         "foss": false
     },
-    "simplenote": {
-        "category": "Document",
-        "choco": "simplenote",
-        "content": "Simplenote",
-        "description": "Simplenote is an easy way to keep notes, lists, ideas and more.",
-        "link": "https://simplenote.com/",
-        "winget": "Automattic.Simplenote",
-        "foss": true
-    },
+
     "simplewall": {
         "category": "Pro Tools",
         "choco": "simplewall",
@@ -1528,15 +1193,7 @@
         "winget": "Valve.Steam",
         "foss": false
     },
-    "roblox": {
-        "category": "Games",
-        "choco": "na",
-        "content": "Roblox",
-        "description": "Roblox is a platform and game creation system that allows users to create and play games developed by the community.",
-        "link": "https://www.roblox.com/",
-        "winget": "Roblox.Roblox",
-        "foss": false
-    },
+
     "sublimetext": {
         "category": "Development",
         "choco": "sublimetext4",
@@ -1546,15 +1203,7 @@
         "winget": "SublimeHQ.SublimeText.4",
         "foss": false
     },
-    "sumatra": {
-        "category": "Document",
-        "choco": "sumatrapdf",
-        "content": "Sumatra PDF",
-        "description": "Sumatra PDF is a lightweight and fast PDF viewer with minimalistic design.",
-        "link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
-        "winget": "SumatraPDF.SumatraPDF",
-        "foss": true
-    },
+
     "sunshine": {
         "category": "Selfhosted Tools",
         "choco": "sunshine",
@@ -1671,15 +1320,7 @@
         "winget": "CharlesMilette.TranslucentTB",
         "foss": true
     },
-    "ubisoft": {
-        "category": "Games",
-        "choco": "ubisoft-connect",
-        "content": "Ubisoft Connect",
-        "description": "Ubisoft Connect is Ubisoft's digital distribution and online gaming service, providing access to Ubisoft's games and services.",
-        "link": "https://ubisoftconnect.com/",
-        "winget": "Ubisoft.Connect",
-        "foss": false
-    },
+
     "ungoogled": {
         "category": "Browsers",
         "choco": "ungoogled-chromium",
@@ -1698,15 +1339,7 @@
         "winget": "Unity.UnityHub",
         "foss": false
     },
-    "vagrant": {
-        "category": "Development",
-        "choco": "vagrant",
-        "content": "Vagrant",
-        "description": "Vagrant builds and manages reproducible virtual machine development environments from declarative configuration.",
-        "link": "https://developer.hashicorp.com/vagrant",
-        "winget": "Hashicorp.Vagrant",
-        "foss": false
-    },
+
     "everything": {
         "category": "Utilities",
         "choco": "everything",
@@ -1716,24 +1349,8 @@
         "winget": "voidtools.Everything",
         "foss": false
     },
-    "vc2015_32": {
-        "category": "Microsoft Tools",
-        "choco": "vcredist2015",
-        "content": "Visual C++ 2015-2022 32-bit",
-        "description": "Visual C++ 2015-2022 32-bit redistributable package installs runtime components of Visual C++ libraries required to run 32-bit applications.",
-        "link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
-        "winget": "Microsoft.VCRedist.2015+.x86",
-        "foss": false
-    },
-    "vc2015_64": {
-        "category": "Microsoft Tools",
-        "choco": "vcredist2015",
-        "content": "Visual C++ 2015-2022 64-bit",
-        "description": "Visual C++ 2015-2022 64-bit redistributable package installs runtime components of Visual C++ libraries required to run 64-bit applications.",
-        "link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
-        "winget": "Microsoft.VCRedist.2015+.x64",
-        "foss": false
-    },
+
+
     "ventoy": {
         "category": "Pro Tools",
         "choco": "ventoy",
@@ -1752,24 +1369,8 @@
         "winget": "Vencord.Vesktop",
         "foss": true
     },
-    "visualstudio2022": {
-        "category": "Development",
-        "choco": "visualstudio2022community",
-        "content": "Visual Studio 2022",
-        "description": "Visual Studio 2022 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
-        "link": "https://visualstudio.microsoft.com/",
-        "winget": "Microsoft.VisualStudio.2022.Community",
-        "foss": false
-    },
-    "visualstudio2026": {
-        "category": "Development",
-        "choco": "visualstudio2026community",
-        "content": "Visual Studio 2026",
-        "description": "Visual Studio 2026 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
-        "link": "https://visualstudio.microsoft.com/",
-        "winget": "Microsoft.VisualStudio.Community",
-        "foss": false
-    },
+
+
     "vlc": {
         "category": "Multimedia Tools",
         "choco": "vlc",
@@ -1779,15 +1380,7 @@
         "winget": "VideoLAN.VLC",
         "foss": true
     },
-    "vrdesktopstreamer": {
-        "category": "Games",
-        "choco": "na",
-        "content": "Virtual Desktop Streamer",
-        "description": "Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices.",
-        "link": "https://www.vrdesktop.net/",
-        "winget": "VirtualDesktop.Streamer",
-        "foss": false
-    },
+
     "vscode": {
         "category": "Development",
         "choco": "vscode",
@@ -1869,24 +1462,8 @@
         "winget": "MHNexus.HxD",
         "foss": false
     },
-    "xournal": {
-        "category": "Document",
-        "choco": "xournalplusplus",
-        "content": "Xournal++",
-        "description": "Xournal++ is an open-source handwriting notetaking software with PDF annotation capabilities.",
-        "link": "https://xournalpp.github.io/",
-        "winget": "Xournal++.Xournal++",
-        "foss": true
-    },
-    "yarn": {
-        "category": "Development",
-        "choco": "yarn",
-        "content": "Yarn",
-        "description": "Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects.",
-        "link": "https://yarnpkg.com/",
-        "winget": "Yarn.Yarn",
-        "foss": true
-    },
+
+
     "uv": {
         "category": "Development",
         "choco": "uv",
@@ -1914,14 +1491,7 @@
         "winget": "glzr-io.glazewm",
         "foss": true
     },
-    "Overwolf": {
-        "category": "Games",
-        "content": "CurseForge",
-        "description": "CurseForge is a desktop application for managing mods and modpacks across multiple games, powered by Overwolf.",
-        "link": "https://www.overwolf.com/app/overwolf-curseforge",
-        "winget": "Overwolf.CurseForge",
-        "foss": false
-    },
+
     "OFGB": {
         "category": "Utilities",
         "choco": "ofgb",
@@ -1940,15 +1510,7 @@
         "winget": "ZedIndustries.Zed",
         "foss": true
     },
-    "zotero": {
-        "category": "Document",
-        "choco": "zotero",
-        "content": "Zotero",
-        "description": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials.",
-        "link": "https://www.zotero.org/",
-        "winget": "DigitalScholar.Zotero",
-        "foss": true
-    },
+
     "deskflow": {
         "category": "Utilities",
         "choco": "deskflow",
@@ -1958,24 +1520,8 @@
         "winget": "Deskflow.Deskflow",
         "foss": true
     },
-    "Ruby": {
-        "category": "Development",
-        "choco": "ruby",
-        "winget": "RubyInstallerTeam.Ruby.4.0",
-        "description": "A Ruby language execution environment with a MSYS2 installation.",
-        "content": "Ruby",
-        "link": "https://rubyinstaller.org/",
-        "foss": true
-    },
-    "Lua": {
-        "category": "Development",
-        "choco": "lua",
-        "winget": "rjpcomputing.luaforwindows",
-        "description": "A 'batteries included environment' for the Lua scripting language on Windows.",
-        "content": "Lua",
-        "link": "https://github.com/rjpcomputing/luaforwindows",
-        "foss": true
-    },
+
+
     "CloudflareWARP": {
         "category": "Utilities",
         "choco": "warp",

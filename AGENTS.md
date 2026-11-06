@@ -13,7 +13,7 @@ If the task touches application removal, read these before editing anything:
 - `context/remove-apps.md` — project context and the verified removal master.
 - `skills/remove-apps/SKILL.md` — the fast app-removal workflow (exact steps, caveats, verification).
 
-Apps live in `config/applications.json` + `config/icons/` and are read by the script at runtime, so never edit `functions/`. PowerShell (Pester, Script Analyzer, `Compile.ps1`) is not available on this host.
+Apps live in `config/applications.json` + `config/icons/` and are read by the script at runtime, so never edit `functions/`.
 
 
 ## 0. Non-Negotiables

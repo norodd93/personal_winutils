@@ -1,6 +1,6 @@
 # Context: removing applications from WinUtil
 
-Project facts and commands gathered while removing eight browsers (`chrome`, `edge`, `firefoxesr`, `librewolf`, `mullvadbrowser`, `vivaldi`, `waterfox`, `ZenBrowser`) in November 2026.
+Project facts and commands gathered while removing applications from WinUtil: eight browsers (`chrome`, `edge`, `firefoxesr`, `librewolf`, `mullvadbrowser`, `vivaldi`, `waterfox`, `ZenBrowser`) in November 2026, and 21 dev tools/languages/runtimes (`bruno`, `chatgpt`, `claude-code`, `golang`, `hugo`, `java8`, `java21`, `java25`, `jetbrains`, `neovim`, `nodejslts`, `posh`, `notepadplus`, `postman`, `Ruby`, `rustlang`, `vagrant`, `visualstudio2022`, `visualstudio2026`, `yarn`) in a later run.
 
 ## Stack
 
@@ -61,7 +61,7 @@ Project facts and commands gathered while removing eight browsers (`chrome`, `ed
 
 1. **PowerShell `Select-String` for finding entry lines**
    - `(pwsh -Command "(Get-Content 'config/applications.json') | Select-String -Pattern '\"chatterino\"' | % { $_.LineNumber }")` returned exact line numbers (e.g., 200 for chatterino)
-   - Works for all 11 applications found this way
+   - Works for all applications found this way (21 applications in the latest run)
 
 2. **Editor tool for removing entries**
    - Using `old_text`/`new_text` pattern matching successfully removed entries
@@ -69,7 +69,7 @@ Project facts and commands gathered while removing eight browsers (`chrome`, `ed
    - Preserved JSON validity after each removal
 
 3. **Removing icon files**
-   - `del config/icons/<key>.png` worked for all 9 icon files
+   - `del config/icons/<key>.png` worked for all 21 icon files
    - Verified icons no longer appear in directory listing
 
 4. **JSON validation after removals**
@@ -77,7 +77,7 @@ Project facts and commands gathered while removing eight browsers (`chrome`, `ed
    - No syntax errors introduced by the removals
 
 5. **Context/SKILL file updates**
-   - Updating `context/remove-apps.md` to reflect actual removals (11 apps vs previous 8 browsers)
+   - Updating `context/remove-apps.md` and `skills/remove-apps/SKILL.md` to reflect actual removals (21 apps vs previous 8 browsers)
    - Updating `skills/remove-apps/SKILL.md` with comprehensive workflow documentation
 
 ### ❌ What Didn't Work
@@ -122,4 +122,4 @@ Project facts and commands gathered while removing eight browsers (`chrome`, `ed
 
 ## Known environment limitation
 
-- This host (Linux) has no PowerShell, so `pwsh`/`powershell` is unavailable: Pester, Script Analyzer, and `Compile.ps1` cannot be run here. Verify on Windows when possible.
+- PowerShell (`pwsh`) IS available on this host (win32): `ConvertFrom-Json` validation and icon deletion ran successfully. Pester/Script Analyzer/`Compile.ps1` availability should still be confirmed before relying on them.
