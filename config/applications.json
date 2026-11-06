@@ -1806,15 +1806,6 @@
         "winget": "VSCodium.VSCodium",
         "foss": true
     },
-    "whatsapp": {
-        "category": "Communications",
-        "choco": "na",
-        "content": "WhatsApp Desktop",
-        "description": "WhatsApp Desktop is the official Windows desktop messaging app from Meta, distributed through the Microsoft Store.",
-        "link": "https://www.whatsapp.com/download",
-        "winget": "msstore:9NKSQGP7F2NH",
-        "foss": false
-    },
     "wingetui": {
         "category": "Utilities",
         "choco": "wingetui",
@@ -1895,15 +1886,6 @@
         "link": "https://yarnpkg.com/",
         "winget": "Yarn.Yarn",
         "foss": true
-    },
-    "zoom": {
-        "category": "Communications",
-        "choco": "zoom",
-        "content": "Zoom",
-        "description": "Zoom is a popular video conferencing and web conferencing service for online meetings, webinars, and collaborative projects.",
-        "link": "https://zoom.us/",
-        "winget": "Zoom.Zoom",
-        "foss": false
     },
     "uv": {
         "category": "Development",
