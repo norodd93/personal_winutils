@@ -583,40 +583,45 @@
     "InvokeScript": [
       "
       $EdgeAppDir = \"$Env:ProgramFiles (x86)\\Microsoft\\Edge\\Application\"
-      $Path = $null
+      $SetupPath = $null
+      $EdgeSystemAppDir = $null
+
       try {
           if (Test-Path -LiteralPath $EdgeAppDir -ErrorAction Stop) {
-              $InstallerPattern = Join-Path $EdgeAppDir \"*\\Installer\\setup.exe\"
-              if (Test-Path -Path $InstallerPattern -ErrorAction Stop) {
-                  $Path = (Get-ChildItem -Path $InstallerPattern -ErrorAction Stop | Sort-Object FullName -Descending | Select-Object -First 1).FullName
-              }
+              $SetupPath = Get-ChildItem -Path (Join-Path $EdgeAppDir '*\\Installer\\setup.exe') -File -ErrorAction Stop |
+                  Sort-Object FullName -Descending |
+                  Select-Object -First 1 -ExpandProperty FullName
           }
-      } catch {
-          Write-WinUtilLog -Level \"ERROR\" -Component \"RemoveEdge\" -Message \"Failed to locate Edge installer: $($_.Exception.Message)\"
-          Write-WinUtilHost \"Failed to locate Edge installer.\"
-          return
-      }
 
-      if ($Path) {
-          try {
-              New-Item -Path \"$Env:SystemRoot\\SystemApps\\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\\MicrosoftEdge.exe\" -Force -ErrorAction Stop | Out-Null
-              Start-Process -FilePath $Path -ArgumentList \"--uninstall --system-level --force-uninstall --delete-profile\" -Wait -ErrorAction Stop
-              Write-WinUtilHost \"Microsoft Edge was removed\"
-              Write-WinUtilLog -Level \"INFO\" -Component \"RemoveEdge\" -Message \"Microsoft Edge was removed\"
-          } catch {
-              Write-WinUtilLog -Level \"ERROR\" -Component \"RemoveEdge\" -Message \"Failed to uninstall Edge: $($_.Exception.Message)\"
-              Write-WinUtilHost \"Failed to uninstall Microsoft Edge.\"
+          $EdgeSystemAppDir = Get-ChildItem -Path \"$Env:SystemRoot\\SystemApps\" -Directory -Filter 'Microsoft.MicrosoftEdge_*' -ErrorAction Stop |
+              Sort-Object FullName -Descending |
+              Select-Object -First 1 -ExpandProperty FullName
+
+          if (-not $EdgeSystemAppDir) {
+              throw 'Microsoft Edge system app directory not found.'
           }
-      } else {
-          Write-WinUtilHost \"Microsoft Edge is not installed\"
-          Write-WinUtilLog -Level \"INFO\" -Component \"RemoveEdge\" -Message \"Microsoft Edge is not installed\"
+
+          $DummyEdgePath = Join-Path $EdgeSystemAppDir 'MicrosoftEdge.exe'
+          New-Item -Path $DummyEdgePath -ItemType File -Force -ErrorAction Stop | Out-Null
+
+          if (-not $SetupPath) {
+              throw 'Microsoft Edge installer not found.'
+          }
+
+          Start-Process -FilePath $SetupPath -ArgumentList '--uninstall --system-level --force-uninstall --delete-profile' -Wait -ErrorAction Stop
+          Write-WinUtilHost 'Microsoft Edge was removed'
+          Write-WinUtilLog -Level 'INFO' -Component 'RemoveEdge' -Message 'Microsoft Edge was removed'
+      } catch {
+          Write-WinUtilLog -Level 'ERROR' -Component 'RemoveEdge' -Message \"Failed to remove Edge: $($_.Exception.Message)\"
+          Write-WinUtilHost 'Failed to uninstall Microsoft Edge.'
+          throw
       }
       "
     ],
     "UndoScript": [
       "
-      Write-WinUtilHost \"Installing Microsoft Edge...\"
-      Write-WinUtilLog -Level \"INFO\" -Component \"RemoveEdge\" -Message \"Installing Microsoft Edge via winget\"
+      Write-WinUtilHost 'Installing Microsoft Edge...'
+      Write-WinUtilLog -Level 'INFO' -Component 'RemoveEdge' -Message 'Installing Microsoft Edge via winget'
       winget install Microsoft.Edge --source winget
       "
     ],
@@ -629,20 +634,26 @@
     "panel": "1",
     "InvokeScript": [
       "
+      if (-not (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue)) {
+          Write-WinUtilHost 'BitLocker is not available on this system.'
+          Write-WinUtilLog -Level 'WARN' -Component 'DisableBitLocker' -Message 'BitLocker is not available on this system.'
+          return
+      }
+
       try {
           $bitLockerVolume = Get-BitLockerVolume -MountPoint $Env:SystemDrive -ErrorAction Stop
 
           if ($bitLockerVolume.VolumeStatus -eq 'FullyDecrypted') {
               Write-WinUtilHost \"BitLocker is already disabled on $($Env:SystemDrive).\"
-              Write-WinUtilLog -Level \"INFO\" -Component \"DisableBitLocker\" -Message \"BitLocker is already disabled on $($Env:SystemDrive)\"
+              Write-WinUtilLog -Level 'INFO' -Component 'DisableBitLocker' -Message \"BitLocker is already disabled on $($Env:SystemDrive)\"
           } else {
               Disable-BitLocker -MountPoint $Env:SystemDrive -ErrorAction Stop
               Write-WinUtilHost \"BitLocker has been disabled on $($Env:SystemDrive).\"
-              Write-WinUtilLog -Level \"INFO\" -Component \"DisableBitLocker\" -Message \"BitLocker disabled on $($Env:SystemDrive)\"
+              Write-WinUtilLog -Level 'INFO' -Component 'DisableBitLocker' -Message \"BitLocker disabled on $($Env:SystemDrive)\"
           }
       } catch {
-          Write-WinUtilLog -Level \"ERROR\" -Component \"DisableBitLocker\" -Message \"Failed to disable BitLocker: $($_.Exception.Message)\"
-          Write-WinUtilHost \"Failed to disable BitLocker.\"
+          Write-WinUtilLog -Level 'ERROR' -Component 'DisableBitLocker' -Message \"Failed to disable BitLocker: $($_.Exception.Message)\"
+          Write-WinUtilHost 'Failed to disable BitLocker.'
           throw
       }
       "
@@ -683,33 +694,35 @@
           try {
               $OneDriveAcl = Get-Acl -LiteralPath $OneDrivePath -ErrorAction Stop
           } catch {
-              Write-WinUtilLog -Level \"ERROR\" -Component \"RemoveOneDrive\" -Message \"Failed to capture OneDrive ACL: $($_.Exception.Message)\"
-              Write-WinUtilHost \"Failed to capture OneDrive folder permissions.\"
+              Write-WinUtilLog -Level 'ERROR' -Component 'RemoveOneDrive' -Message \"Failed to capture OneDrive ACL: $($_.Exception.Message)\"
+              Write-WinUtilHost 'Failed to capture OneDrive folder permissions.'
           }
       } else {
-          Write-WinUtilHost \"OneDrive folder is already absent; skipping folder permissions and cleanup.\"
-          Write-WinUtilLog -Level \"INFO\" -Component \"RemoveOneDrive\" -Message \"OneDrive folder is already absent; skipping folder permissions and cleanup.\"
+          Write-WinUtilHost 'OneDrive folder is already absent; skipping folder permissions and cleanup.'
+          Write-WinUtilLog -Level 'INFO' -Component 'RemoveOneDrive' -Message 'OneDrive folder is already absent; skipping folder permissions and cleanup.'
       }
 
       try {
           # Protect user files while the uninstaller runs.
           if ($OneDriveFolderExists) {
-              icacls $OneDrivePath /deny \"*S-1-5-32-544:(D,DC)\" -ErrorAction Stop
+              icacls \"$OneDrivePath\" /deny \"*S-1-5-32-544:(D,DC)\" /T /C
               if ($LASTEXITCODE -ne 0) { throw \"Unable to protect the OneDrive folder (icacls exit code $LASTEXITCODE).\" }
           }
 
-          Write-WinUtilHost \"Uninstalling OneDrive...\"
-          Start-Process -FilePath (Join-Path $Env:SystemRoot \"System32\\OneDriveSetup.exe\") -ArgumentList '/uninstall' -Wait -ErrorAction Stop
+          Write-WinUtilHost 'Uninstalling OneDrive...'
+          $OneDriveSetupPath = (Get-ChildItem -Path \"$Env:SystemRoot\\System32\" -Filter 'OneDriveSetup.exe' -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+          if (-not $OneDriveSetupPath) {
+              throw 'OneDriveSetup.exe was not found in System32.'
+          }
+          Start-Process -FilePath $OneDriveSetupPath -ArgumentList '/uninstall' -Wait -ErrorAction Stop
 
-          Write-WinUtilHost \"Removing leftover OneDrive Files...\"
-          $fileCoAuth = Get-Process -ErrorAction SilentlyContinue | Where-Object ProcessName -eq 'FileCoAuth'
-          if ($fileCoAuth) { $fileCoAuth | Stop-Process -ErrorAction Stop }
-          $explorer = Get-Process -ErrorAction SilentlyContinue | Where-Object ProcessName -eq 'Explorer'
-          if ($explorer) { $explorer | Stop-Process -ErrorAction Stop }
+          Write-WinUtilHost 'Removing leftover OneDrive Files...'
+          $oneDriveProcesses = Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -in 'OneDrive', 'FileCoAuth', 'Explorer' }
+          if ($oneDriveProcesses) { $oneDriveProcesses | Stop-Process -ErrorAction Stop }
 
-          $OneDriveLeftovers = @(\"$Env:LocalAppData\\Microsoft\\OneDrive\", \"$Env:ProgramData\\Microsoft OneDrive\")
+          $OneDriveLeftovers = @("$Env:LocalAppData\\Microsoft\\OneDrive", "$Env:ProgramData\\Microsoft OneDrive")
           foreach ($LeftoverPath in $OneDriveLeftovers) {
-              if (Test-Path -LiteralPath $LeftoverPath -PathType Container -ErrorAction Stop) {
+              if (Test-Path -LiteralPath $LeftoverPath -PathType Container -ErrorAction SilentlyContinue) {
                   Remove-Item -LiteralPath $LeftoverPath -Recurse -Force -ErrorAction Stop
               }
           }
@@ -720,7 +733,7 @@
               Set-Service -Name OneSyncSvc -StartupType Disabled -ErrorAction Stop
           }
       } catch {
-          Write-WinUtilLog -Level \"ERROR\" -Component \"RemoveOneDrive\" -Message \"OneDrive removal failed: $($_.Exception.Message)\"
+          Write-WinUtilLog -Level 'ERROR' -Component 'RemoveOneDrive' -Message \"OneDrive removal failed: $($_.Exception.Message)\"
           throw
       } finally {
           if ($OneDriveFolderExists -and $OneDriveAcl) {
@@ -728,7 +741,7 @@
               try {
                   Set-Acl -LiteralPath $OneDrivePath -AclObject $OneDriveAcl -ErrorAction Stop
               } catch {
-                  Write-WinUtilLog -Level \"WARN\" -Component \"RemoveOneDrive\" -Message \"Failed to restore OneDrive ACL: $($_.Exception.Message)\"
+                  Write-WinUtilLog -Level 'WARN' -Component 'RemoveOneDrive' -Message \"Failed to restore OneDrive ACL: $($_.Exception.Message)\"
               }
           }
       }
@@ -745,7 +758,7 @@
                   [System.IO.Directory]::Delete($OneDrivePath, $false)
                   [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
               } catch {
-                  Write-WinUtilLog -Level \"ERROR\" -Component \"RemoveOneDrive\" -Message \"Failed to delete OneDrive folder: $($_.Exception.Message)\"
+                  Write-WinUtilLog -Level 'ERROR' -Component 'RemoveOneDrive' -Message \"Failed to delete OneDrive folder: $($_.Exception.Message)\"
               }
           }
       }
@@ -753,8 +766,8 @@
     ],
     "UndoScript": [
       "
-      Write-WinUtilHost \"Installing OneDrive\"
-      Write-WinUtilLog -Level \"INFO\" -Component \"RemoveOneDrive\" -Message \"Installing OneDrive via winget\"
+      Write-WinUtilHost 'Installing OneDrive'
+      Write-WinUtilLog -Level 'INFO' -Component 'RemoveOneDrive' -Message 'Installing OneDrive via winget'
       winget install Microsoft.Onedrive --source winget
 
       # Enable OneSyncSvc when the per-user service template exists
