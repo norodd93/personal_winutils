@@ -9,15 +9,6 @@
         "winget": "7zip.7zip",
         "foss": true
     },
-    "abdownloadmanager": {
-        "category": "Utilities",
-        "choco": "ab-download-manager",
-        "content": "AB Download Manager",
-        "description": "AB Download Manager is an open-source download accelerator and manager with multi-threaded downloads, queue scheduling, speed limiting, and browser integration.",
-        "link": "https://abdownloadmanager.com/",
-        "winget": "amir1376.ABDownloadManager",
-        "foss": true
-    },
 
 
 
@@ -29,15 +20,6 @@
         "link": "https://angryip.org/",
         "winget": "angryziber.AngryIPScanner",
         "foss": true
-    },
-    "anydesk": {
-        "category": "Utilities",
-        "choco": "anydesk",
-        "content": "AnyDesk",
-        "description": "AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency.",
-        "link": "https://anydesk.com/",
-        "winget": "AnyDesk.AnyDesk",
-        "foss": false
     },
     "audacity": {
         "category": "Multimedia Tools",
@@ -66,15 +48,6 @@
         "winget": "Microsoft.Sysinternals.RDCMan",
         "foss": false
     },
-    "autohotkey": {
-        "category": "Utilities",
-        "choco": "autohotkey",
-        "content": "AutoHotkey",
-        "description": "AutoHotkey is a scripting language for Windows that allows users to create custom automation scripts and macros. It is often used for automating repetitive tasks and customizing keyboard shortcuts.",
-        "link": "https://www.autohotkey.com/",
-        "winget": "AutoHotkey.AutoHotkey",
-        "foss": true
-    },
     "battlenet": {
         "category": "Games",
         "choco": "na",
@@ -83,15 +56,6 @@
         "description": "Battle.net is a launcher for games created and developed by Activision Blizzard",
         "link": "https://battle.net",
         "foss": false
-    },
-    "bitwarden": {
-        "category": "Utilities",
-        "choco": "bitwarden",
-        "content": "Bitwarden",
-        "description": "Bitwarden is an open-source password management solution. It allows users to store and manage their passwords in a secure and encrypted vault, accessible across multiple devices.",
-        "link": "https://bitwarden.com/",
-        "winget": "Bitwarden.Bitwarden",
-        "foss": true
     },
     "blender": {
         "category": "Multimedia Tools",
@@ -121,15 +85,6 @@
         "winget": "Klocman.BulkCrapUninstaller",
         "foss": true
     },
-    "blurautoclicker": {
-        "category": "Utilities",
-        "choco": "na",
-        "content": "BlurAutoClicker",
-        "description": "An Auto-clicker with a few advanced features and generally better performance than popular alternatives.",
-        "link": "https://blur009.vercel.app/projects/blur-autoclicker/",
-        "winget": "Blur009.BlurAutoClicker",
-        "foss": true
-    },
 
     "cemu": {
         "category": "Games",
@@ -141,15 +96,6 @@
         "foss": true
     },
 
-    "chrome": {
-        "category": "Browsers",
-        "choco": "googlechrome",
-        "content": "Chrome",
-        "description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
-        "link": "https://www.google.com/chrome/",
-        "winget": "Google.Chrome",
-        "foss": false
-    },
 
     "claude": {
         "category": "Development",
@@ -161,15 +107,6 @@
         "foss": false
     },
 
-    "cmake": {
-        "category": "Development",
-        "choco": "cmake",
-        "content": "CMake",
-        "description": "CMake is an open-source, cross-platform family of tools designed to build, test and package software.",
-        "link": "https://cmake.org/",
-        "winget": "Kitware.CMake",
-        "foss": true
-    },
     "codex": {
         "category": "Development",
         "choco": "codex",
@@ -257,15 +194,6 @@
 
 
 
-    "dropbox": {
-        "category": "Utilities",
-        "choco": "dropbox",
-        "content": "Dropbox",
-        "description": "Dropbox is a cloud storage client for syncing files, sharing content, and keeping documents available across devices.",
-        "link": "https://www.dropbox.com/desktop",
-        "winget": "Dropbox.Dropbox",
-        "foss": false
-    },
 
 
     "es-de": {
@@ -278,15 +206,6 @@
         "winget": "ES-DE.EmulationStation-DE",
         "foss": true
     },
-    "enteauth": {
-        "category": "Utilities",
-        "choco": "ente-auth",
-        "content": "Ente Auth",
-        "description": "Ente Auth is a free, cross-platform, end-to-end encrypted authenticator app.",
-        "link": "https://ente.io/auth/",
-        "winget": "ente-io.auth-desktop",
-        "foss": true
-    },
     "epicgames": {
         "category": "Games",
         "choco": "epicgameslauncher",
@@ -295,15 +214,6 @@
         "link": "https://www.epicgames.com/store/en-US/",
         "winget": "EpicGames.EpicGamesLauncher",
         "foss": false
-    },
-    "files": {
-        "category": "Utilities",
-        "choco": "files",
-        "content": "Files",
-        "description": "Alternative file explorer.",
-        "link": "https://files.community",
-        "winget": "FilesCommunity.Files",
-        "foss": true
     },
     "fileconverter": {
         "category": "Multimedia Tools",
@@ -331,15 +241,6 @@
         "link": "https://floorp.app/",
         "winget": "Ablaze.Floorp",
         "foss": true
-    },
-    "flux": {
-        "category": "Utilities",
-        "choco": "f.lux",
-        "content": "F.lux",
-        "description": "f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use.",
-        "link": "https://justgetflux.com/",
-        "winget": "flux.flux",
-        "foss": false
     },
 
 
@@ -400,15 +301,6 @@
         "foss": false
     },
 
-    "googledrive": {
-        "category": "Utilities",
-        "choco": "googledrive",
-        "content": "Google Drive",
-        "description": "File syncing across devices all tied to your Google account.",
-        "link": "https://www.google.com/drive/",
-        "winget": "Google.GoogleDrive",
-        "foss": false
-    },
 
     "gsudo": {
         "category": "Pro Tools",
@@ -451,30 +343,12 @@
 
 
 
-    "internetdownloadmanager": {
-        "category": "Utilities",
-        "choco": "internet-download-manager",
-        "content": "Internet Download Manager",
-        "description": "Internet Download Manager is a download manager for accelerating, resuming, and scheduling file downloads.",
-        "link": "https://www.internetdownloadmanager.com/",
-        "winget": "Tonec.InternetDownloadManager",
-        "foss": false
-    },
 
 
 
 
 
 
-    "jellyfinmediaplayer": {
-        "category": "Selfhosted Tools",
-        "choco": "jellyfin-media-player",
-        "content": "Jellyfin Media Player",
-        "description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
-        "link": "https://jellyfin.org/",
-        "winget": "Jellyfin.JellyfinMediaPlayer",
-        "foss": true
-    },
     "jellyfinserver": {
         "category": "Selfhosted Tools",
         "choco": "jellyfin",
@@ -485,15 +359,6 @@
         "foss": true
     },
 
-    "jpegview": {
-        "category": "Utilities",
-        "choco": "jpegview",
-        "content": "JPEG View",
-        "description": "JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF, and TIFF images with a minimal GUI.",
-        "link": "https://github.com/sylikc/jpegview",
-        "winget": "sylikc.JPEGView",
-        "foss": true
-    },
 
     "keepassxc": {
         "category": "Utilities",
@@ -513,15 +378,6 @@
         "winget": "CodecGuide.K-LiteCodecPack.Standard",
         "foss": false
     },
-    "kodi": {
-        "category": "Selfhosted Tools",
-        "choco": "kodi",
-        "content": "Kodi Media Center",
-        "description": "Kodi is an open-source media center application that allows you to play and view most videos, music, podcasts, and other digital media files.",
-        "link": "https://kodi.tv/",
-        "winget": "XBMCFoundation.Kodi",
-        "foss": true
-    },
     "lazygit": {
         "category": "Development",
         "choco": "lazygit",
@@ -532,15 +388,6 @@
         "foss": true
     },
 
-    "localsend": {
-        "category": "Selfhosted Tools",
-        "choco": "localsend.install",
-        "content": "LocalSend",
-        "description": "An open-source cross-platform alternative to AirDrop.",
-        "link": "https://localsend.org/",
-        "winget": "LocalSend.LocalSend",
-        "foss": true
-    },
 
 
     "minitoolpartitionwizard": {
@@ -563,15 +410,6 @@
         "foss": true
     },
 
-    "msedgeredirect": {
-        "category": "Utilities",
-        "choco": "msedgeredirect",
-        "content": "MSEdgeRedirect",
-        "description": "A Tool to Redirect News, Search, Widgets, Weather, and More to your default browser.",
-        "link": "https://github.com/rcmaehl/MSEdgeRedirect",
-        "winget": "rcmaehl.MSEdgeRedirect",
-        "foss": true
-    },
     "msiafterburner": {
         "category": "Pro Tools",
         "choco": "msiafterburner",
@@ -583,15 +421,6 @@
     },
 
 
-    "nanazip": {
-        "category": "Utilities",
-        "choco": "nanazip",
-        "content": "NanaZip",
-        "description": "NanaZip is a fast and efficient file compression and decompression tool.",
-        "link": "https://nanazip.org",
-        "winget": "M2Team.NanaZip",
-        "foss": true
-    },
     "netbird": {
         "category": "Selfhosted Tools",
         "choco": "netbird",
@@ -643,15 +472,6 @@
 
 
 
-    "nvclean": {
-        "category": "Utilities",
-        "choco": "na",
-        "content": "NVCleanstall",
-        "description": "NVCleanstall is a tool designed to customize NVIDIA driver installations, allowing advanced users to control more aspects of the installation process.",
-        "link": "https://www.techpowerup.com/nvcleanstall/",
-        "winget": "TechPowerUp.NVCleanstall",
-        "foss": false
-    },
     "obs": {
         "category": "Multimedia Tools",
         "choco": "obs-studio",
@@ -673,15 +493,6 @@
 
 
 
-    "OPAutoClicker": {
-        "category": "Utilities",
-        "choco": "autoclicker",
-        "content": "OPAutoClicker",
-        "description": "A full-fledged autoclicker with two modes of autoclicking, at your dynamic cursor location or at a prespecified location.",
-        "link": "https://www.opautoclicker.com",
-        "winget": "OPAutoClicker.OPAutoClicker",
-        "foss": false
-    },
     "opencode": {
         "category": "Development",
         "choco": "opencode",
@@ -701,24 +512,6 @@
         "foss": true
     },
 
-    "OVirtualBox": {
-        "category": "Utilities",
-        "choco": "virtualbox",
-        "content": "Oracle VirtualBox",
-        "description": "Oracle VirtualBox is a powerful and free open-source virtualization tool for x86 and AMD64/Intel64 architectures.",
-        "link": "https://www.virtualbox.org/",
-        "winget": "Oracle.VirtualBox",
-        "foss": true
-    },
-    "policyplus": {
-        "category": "Utilities",
-        "choco": "na",
-        "content": "Policy Plus",
-        "description": "Local Group Policy Editor plus more, for all Windows editions.",
-        "link": "https://github.com/Fleex255/PolicyPlus",
-        "winget": "Fleex255.PolicyPlus",
-        "foss": true
-    },
     "processexplorer": {
         "category": "Microsoft Tools",
         "choco": "procexp",
@@ -752,24 +545,6 @@
 
 
 
-    "plex": {
-        "category": "Selfhosted Tools",
-        "choco": "plexmediaserver",
-        "content": "Plex Media Server",
-        "description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features.",
-        "link": "https://www.plex.tv/your-media/",
-        "winget": "Plex.PlexMediaServer",
-        "foss": false
-    },
-    "plexdesktop": {
-        "category": "Selfhosted Tools",
-        "choco": "plex",
-        "content": "Plex Desktop",
-        "description": "Plex Desktop for Windows is the front end for Plex Media Server.",
-        "link": "https://www.plex.tv",
-        "winget": "Plex.Plex",
-        "foss": false
-    },
 
 
     "powershell": {
@@ -781,34 +556,7 @@
         "winget": "Microsoft.PowerShell",
         "foss": true
     },
-    "powertoys": {
-        "category": "Microsoft Tools",
-        "choco": "powertoys",
-        "content": "PowerToys",
-        "description": "PowerToys is a set of utilities for power users to enhance productivity, featuring tools like FancyZones, PowerRename, and more.",
-        "link": "https://github.com/microsoft/PowerToys",
-        "winget": "Microsoft.PowerToys",
-        "foss": true
-    },
 
-    "processlasso": {
-        "category": "Utilities",
-        "choco": "plasso",
-        "content": "Process Lasso",
-        "description": "Process Lasso is a system optimization and automation tool that improves system responsiveness and stability by adjusting process priorities and CPU affinities.",
-        "link": "https://bitsum.com/",
-        "winget": "BitSum.ProcessLasso",
-        "foss": false
-    },
-    "protonauth": {
-        "category": "Utilities",
-        "choco": "protonauth",
-        "content": "Proton Authenticator",
-        "description": "2FA app from Proton to securely sync and backup 2FA codes.",
-        "link": "https://proton.me/authenticator",
-        "winget": "Proton.ProtonAuthenticator",
-        "foss": true
-    },
     "protonmail": {
         "category": "Communications",
         "choco": "protonmail",
@@ -816,24 +564,6 @@
         "description": "Proton Mail is an end-to-end encrypted email service by Proton, protecting your privacy with zero-access encryption.",
         "link": "https://proton.me/mail",
         "winget": "Proton.ProtonMail",
-        "foss": true
-    },
-    "protondrive": {
-        "category": "Utilities",
-        "choco": "protondrive",
-        "content": "Proton Drive",
-        "description": "Proton Drive is an end-to-end encrypted Swiss vault for your files that protects your data.",
-        "link": "https://proton.me/drive",
-        "winget": "Proton.ProtonDrive",
-        "foss": true
-    },
-    "protonpass": {
-        "category": "Utilities",
-        "choco": "protonpass",
-        "content": "Proton Pass",
-        "description": "Proton Pass is a cloud-based password manager with end-to-end encryption and unique email aliases.",
-        "link": "https://proton.me/pass",
-        "winget": "Proton.ProtonPass",
         "foss": true
     },
     "protonvpn": {
@@ -892,15 +622,6 @@
         "winget": "RevoUninstaller.RevoUninstaller",
         "foss": false
     },
-    "WiseProgramUninstaller": {
-        "category": "Utilities",
-        "choco": "na",
-        "content": "Wise Program Uninstaller (WiseCleaner)",
-        "description": "Wise Program Uninstaller is the perfect solution for uninstalling Windows programs, allowing you to uninstall applications quickly and completely using its simple and user-friendly interface.",
-        "link": "https://www.wisecleaner.com/wise-program-uninstaller.html",
-        "winget": "WiseCleaner.WiseProgramUninstaller",
-        "foss": false
-    },
     "rufus": {
         "category": "Pro Tools",
         "choco": "rufus",
@@ -921,45 +642,9 @@
         "foss": true
     },
 
-    "nilesoftShell": {
-        "category": "Utilities",
-        "choco": "nilesoft-shell",
-        "content": "Nilesoft Shell",
-        "description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu.",
-        "link": "https://nilesoft.org/",
-        "winget": "Nilesoft.Shell",
-        "foss": false
-    },
-
-    "signal": {
-        "category": "Communications",
-        "choco": "signal",
-        "content": "Signal",
-        "description": "Signal is a privacy-focused messaging app that offers end-to-end encryption for secure and private communication.",
-        "link": "https://signal.org/",
-        "winget": "OpenWhisperSystems.Signal",
-        "foss": true
-    },
-    "signalrgb": {
-        "category": "Utilities",
-        "choco": "na",
-        "content": "SignalRGB",
-        "description": "SignalRGB lets you control and sync your favorite RGB devices with one free application.",
-        "link": "https://www.signalrgb.com/",
-        "winget": "WhirlwindFX.SignalRgb",
-        "foss": false
-    },
 
 
-    "startallback": {
-        "category": "Utilities",
-        "choco": "StartAllBack",
-        "content": "StartAllBack",
-        "description": "StartAllBack restores and improves Windows taskbar, Start menu, File Explorer, and shell UI behavior.",
-        "link": "https://www.startallback.com/",
-        "winget": "StartIsBack.StartAllBack",
-        "foss": false
-    },
+
     "starship": {
         "category": "Development",
         "choco": "starship",
@@ -998,14 +683,6 @@
         "winget": "LizardByte.Sunshine",
         "foss": true
     },
-    "synctrayzor": {
-        "category": "Selfhosted Tools",
-        "choco": "synctrayzor",
-        "content": "SyncTrayzor",
-        "description": "SyncTrayzor is a Windows tray utility that bundles and wraps Syncthing, making it behave like a native application to easily manage and monitor file synchronization.",
-        "link": "https://github.com/GermanCoding/SyncTrayzor",
-        "winget": "GermanCoding.SyncTrayzor"
-    },
     "syncthing": {
         "category": "Selfhosted Tools",
         "choco": "syncthing",
@@ -1022,15 +699,6 @@
         "description": "SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system.",
         "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview",
         "winget": "Microsoft.Sysinternals.TCPView",
-        "foss": false
-    },
-    "teamviewer": {
-        "category": "Utilities",
-        "choco": "teamviewer",
-        "content": "TeamViewer",
-        "description": "TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices.",
-        "link": "https://www.teamviewer.com/",
-        "winget": "TeamViewer.TeamViewer",
         "foss": false
     },
     "telegram": {
@@ -1087,24 +755,6 @@
         "winget": "Ghisler.TotalCommander",
         "foss": false
     },
-    "treesize": {
-        "category": "Utilities",
-        "choco": "treesizefree",
-        "content": "TreeSize Free",
-        "description": "TreeSize Free is a disk space manager that helps you analyze and visualize the space usage on your drives.",
-        "link": "https://www.jam-software.com/treesize_free/",
-        "winget": "JAMSoftware.TreeSize.Free",
-        "foss": false
-    },
-    "ttaskbar": {
-        "category": "Utilities",
-        "choco": "translucenttb",
-        "content": "TranslucentTB",
-        "description": "TranslucentTB is a tool that allows you to customize the transparency of the Windows Taskbar.",
-        "link": "https://translucenttb.github.io",
-        "winget": "CharlesMilette.TranslucentTB",
-        "foss": true
-    },
 
     "ungoogled": {
         "category": "Browsers",
@@ -1125,15 +775,6 @@
         "foss": false
     },
 
-    "everything": {
-        "category": "Utilities",
-        "choco": "everything",
-        "content": "Everything",
-        "description": "Everything is a search engine that locates files and folders by filename instantly for Windows. Unlike Windows search Everything initially displays every file and folder on your computer (hence the name Everything). You type in a search filter to limit what files and folders are displayed.",
-        "link": "https://www.voidtools.com/",
-        "winget": "voidtools.Everything",
-        "foss": false
-    },
 
 
     "ventoy": {
@@ -1230,15 +871,6 @@
         "winget": "AntibodySoftware.WizTree",
         "foss": false
     },
-    "xeheditor": {
-        "category": "Utilities",
-        "choco": "HxD",
-        "content": "HxD Hex Editor",
-        "description": "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files.",
-        "link": "https://mh-nexus.de/en/hxd/",
-        "winget": "MHNexus.HxD",
-        "foss": false
-    },
 
 
     "uv": {
@@ -1250,34 +882,7 @@
         "winget": "astral-sh.uv",
         "foss": true
     },
-    "tightvnc": {
-        "category": "Utilities",
-        "choco": "TightVNC",
-        "content": "TightVNC",
-        "description": "TightVNC is a free and open-source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there.",
-        "link": "https://www.tightvnc.com/",
-        "winget": "GlavSoft.TightVNC",
-        "foss": true
-    },
-    "glazewm": {
-        "category": "Utilities",
-        "choco": "glazewm",
-        "content": "GlazeWM",
-        "description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar.",
-        "link": "https://github.com/glzr-io/glazewm",
-        "winget": "glzr-io.glazewm",
-        "foss": true
-    },
 
-    "OFGB": {
-        "category": "Utilities",
-        "choco": "ofgb",
-        "content": "OFGB (Oh Frick Go Back)",
-        "description": "GUI Tool to remove ads from various places around Windows 11",
-        "link": "https://github.com/xM4ddy/OFGB",
-        "winget": "xM4ddy.OFGB",
-        "foss": true
-    },
     "Zed": {
         "category": "Development",
         "choco": "zed",
@@ -1296,17 +901,6 @@
         "link": "https://github.com/deskflow/deskflow",
         "winget": "Deskflow.Deskflow",
         "foss": true
-    },
-
-
-    "CloudflareWARP": {
-        "category": "Utilities",
-        "choco": "warp",
-        "winget": "Cloudflare.Warp",
-        "description": "WARP is a freemium VPN service provided by Cloudflare. Includes usage of Cloudflare's DNS",
-        "content": "Cloudflare WARP",
-        "link": "https://one.one.one.one",
-        "foss": false
     }
 }
 
