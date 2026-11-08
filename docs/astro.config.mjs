@@ -55,7 +55,6 @@ export default defineConfig({
 						{ label: 'Applications', slug: 'guides/application' },
 						{ label: 'Tweaks', slug: 'guides/tweaks' },
 						{ label: 'Features', slug: 'guides/features' },
-						{ label: 'Updates', slug: 'guides/updates' },
 						{ label: 'Automation', slug: 'guides/automation' },
 						{ label: 'Win11 Creator', slug: 'guides/win11creator' },
 					],

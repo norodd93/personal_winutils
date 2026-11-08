@@ -161,13 +161,11 @@ Describe "XAML document" {
             "WPFTab3",
             "WPFTab4",
             "WPFTab5",
-            "WPFTab6",
             "WPFTab1BT",
             "WPFTab2BT",
             "WPFTab3BT",
             "WPFTab4BT",
             "WPFTab5BT",
-            "WPFTab6BT",
             "SearchBar",
             "SearchBarIcon",
             "SearchBarClearButton",
@@ -204,9 +202,6 @@ Describe "XAML document" {
             "WPFGetInstalledTweaks",
             "WPFTweaksbutton",
             "WPFUndoall",
-            "WPFUpdatesdefault",
-            "WPFUpdatessecurity",
-            "WPFUpdatesdisable",
             "WPFDefaultAppxSelection",
             "WPFGetInstalledAppx",
             "WPFSelectAllAppx",
@@ -223,23 +218,6 @@ Describe "XAML document" {
     }
 
 
-
-    It "presents the three Updates profiles with accurate action labels" {
-        $updatesTab = $script:xaml.SelectSingleNode('//*[local-name()="TabItem"][@Name="WPFTab4"]')
-        $profileGrid = $updatesTab.SelectSingleNode('.//*[local-name()="UniformGrid"]')
-        $expectedButtons = @{
-            WPFUpdatessecurity = "Apply Recommended"
-            WPFUpdatesdefault = "Restore Defaults"
-            WPFUpdatesdisable = "Disable Updates"
-        }
-
-        $profileGrid.GetAttribute("Columns") | Should -Be "3"
-        foreach ($buttonName in $expectedButtons.Keys) {
-            $button = $updatesTab.SelectSingleNode(".//*[local-name()='Button'][@Name='$buttonName']")
-            $button.GetAttribute("Content") | Should -Be $expectedButtons[$buttonName]
-        }
-        $updatesTab.SelectSingleNode('.//*[@Name="updatespanel"]') | Should -BeNullOrEmpty
-    }
 
     It "contains Win11 Creator controls used by the ISO workflow" {
         $xamlNames = @(Get-WinUtilXamlRuntimeNamedControls | ForEach-Object { $_.Name })
@@ -306,9 +284,8 @@ Describe "XAML document" {
             "WPFTab1:Install",
             "WPFTab2:Tweaks",
             "WPFTab3:Config",
-            "WPFTab4:Updates",
-            "WPFTab5:Win11ISO",
-            "WPFTab6:AppX"
+            "WPFTab4:Win11ISO",
+            "WPFTab5:AppX"
         )
 
         if (@($actualTabs).Count -ne $expectedTabs.Count) {
@@ -391,7 +368,7 @@ Describe "XAML document" {
         $comboToggleStyle | Should -Not -BeNullOrEmpty
         $comboToggle.GetAttribute("Style") | Should -Be "{StaticResource ComboBoxToggleButtonStyle}"
         $comboItemStyle | Should -Not -BeNullOrEmpty
-        $navButtons.Count | Should -Be 6
+        $navButtons.Count | Should -Be 5
         foreach ($navButton in $navButtons) {
             $navButton.GetAttribute("Style") | Should -Be "{StaticResource TabToggleButton}"
         }

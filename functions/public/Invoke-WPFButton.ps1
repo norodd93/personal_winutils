@@ -33,7 +33,6 @@ function Invoke-WPFButton {
     # every Button in $sync gets wired to this function, and they must not become jobs.
     $workButtons = @(
         "WPFInstallUpgrade", "WPFAddUltPerf", "WPFRemoveUltPerf",
-        "WPFUpdatesdefault", "WPFUpdatesdisable", "WPFUpdatessecurity",
         "WPFGetInstalledAppx"
     )
 
@@ -44,25 +43,14 @@ function Invoke-WPFButton {
         ($Button -notlike "WPFPanel*" -or $featureEntry.function)
 
     if ($isConfigWork -or $workButtons -contains $Button) {
-        $updatesDisableConfirmed = $false
-        if ($Button -eq "WPFUpdatesdisable") {
-            $updatesDisableConfirmed = Confirm-WPFUpdatesdisable
-            if (-not $updatesDisableConfirmed) {
-                return
-            }
-        }
-
-        $jobParameters = @{
-            Button = $Button
-            UpdatesDisableConfirmed = $updatesDisableConfirmed
-        }
+        $jobParameters = @{ Button = $Button }
         if ($Button -eq "WPFInstallUpgrade") {
             $jobParameters.ManagerPreference = $sync.preferences.packagemanager
         }
         Start-WinUtilJob -Name (Get-WinUtilButtonLabel -Button $Button) -QueueIfBusy -Parameters $jobParameters -ScriptBlock {
-            param($Button, $UpdatesDisableConfirmed, $ManagerPreference)
+            param($Button, $ManagerPreference)
 
-            Invoke-WPFButtonAction -Button $Button -UpdatesDisableConfirmed:$UpdatesDisableConfirmed -ManagerPreference $ManagerPreference
+            Invoke-WPFButtonAction -Button $Button -ManagerPreference $ManagerPreference
         }
         return
     }
@@ -126,7 +114,6 @@ function Invoke-WPFButtonAction {
 
     Param (
         [string]$Button,
-        [switch]$UpdatesDisableConfirmed,
         [string]$ManagerPreference = $sync.preferences.packagemanager
     )
 
@@ -172,12 +159,9 @@ function Invoke-WPFButtonAction {
         "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -Enable}
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance}
         "WPFundoall" {Invoke-WPFundoall}
-        "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
-        "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable -Confirmed:$UpdatesDisableConfirmed}
-        "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
-        "WPFAppxRemoval" {Invoke-WPFTab "WPFTab6BT"}
+        "WPFAppxRemoval" {Invoke-WPFTab "WPFTab5BT"}
         "WPFBackToTweaks" {Invoke-WPFTab "WPFTab2BT"}
         "WPFInstallSelectedAppx" {Invoke-WPFAppxInstall}
         "WPFRemoveSelectedAppx" {Invoke-WPFAppxRemoval}

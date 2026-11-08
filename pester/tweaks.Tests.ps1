@@ -612,3 +612,68 @@ Describe "Invoke-WPFundoall" {
         }
     }
 }
+
+
+Describe "All real tweaks from config/tweaks.json" {
+    BeforeAll {
+        $script:realTweaks = Get-Content -Path (Join-Path $script:repoRoot "config\tweaks.json") -Raw | ConvertFrom-Json
+    }
+
+    BeforeEach {
+        $script:sync = [Hashtable]::Synchronized(@{
+            configs = @{
+                tweaks = $script:realTweaks
+            }
+        })
+
+        # Mock every system-affecting helper so no registry, service, script,
+        # or AppX change ever reaches the host while the real config is exercised.
+        Mock Get-Service {
+            [pscustomobject]@{ Name = $Name; StartType = "Automatic" }
+        }
+        Mock Set-WinUtilService { }
+        Mock Set-WinUtilRegistry { }
+        Mock Invoke-WinUtilScript { }
+        Mock Remove-WinUtilAPPX { }
+        Mock Remove-WinUtilProvisionedAPPX { }
+        Mock Write-WinUtilLog { }
+        Mock Write-Warning { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "applies every real tweak without touching the host" {
+        foreach ($key in $script:realTweaks.PSObject.Properties.Name) {
+            { Invoke-WinUtilTweaks -CheckBox $key } | Should -Not -Throw -Because "Tweak $key should apply with all system helpers mocked"
+        }
+    }
+
+    It "undoes every real tweak without touching the host" {
+        foreach ($key in $script:realTweaks.PSObject.Properties.Name) {
+            { Invoke-WinUtilTweaks -CheckBox $key -undo $true } | Should -Not -Throw -Because "Tweak $key should undo with all system helpers mocked"
+        }
+    }
+
+    It "dispatches the Telemetry tweak's service, registry, and script actions" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksTelemetry"
+
+        Should -Invoke -CommandName Get-Service -Times 2 -Exactly
+        Should -Invoke -CommandName Set-WinUtilRegistry -Times 13 -Exactly
+        Should -Invoke -CommandName Invoke-WinUtilScript -Times 1 -Exactly
+    }
+
+    It "dispatches the Hiber tweak's registry and script actions" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksHiber"
+
+        Should -Invoke -CommandName Set-WinUtilRegistry -Times 2 -Exactly
+        Should -Invoke -CommandName Invoke-WinUtilScript -Times 1 -Exactly
+    }
+
+    It "calls Get-Service once per service entry for the Services tweak" {
+        Invoke-WinUtilTweaks -CheckBox "WPFTweaksServices"
+
+        Should -Invoke -CommandName Get-Service -Times 5 -Exactly
+    }
+}

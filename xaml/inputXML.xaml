@@ -1111,7 +1111,7 @@
                     </ToggleButton.Content>
                 </ToggleButton>
                 <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
-                    Background="{DynamicResource ButtonAppxBackgroundColor}" Foreground="{DynamicResource ButtonAppxForegroundColor}" FontWeight="Bold" Name="WPFTab6BT">
+                    Background="{DynamicResource ButtonAppxBackgroundColor}" Foreground="{DynamicResource ButtonAppxForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
                     <ToggleButton.Content>
                         <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonAppxForegroundColor}">
                             <Underline>A</Underline>ppX
@@ -1126,16 +1126,8 @@
                         </TextBlock>
                     </ToggleButton.Content>
                 </ToggleButton>
-                <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
-                    Background="{DynamicResource ButtonUpdatesBackgroundColor}" Foreground="{DynamicResource ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
-                    <ToggleButton.Content>
-                        <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonUpdatesForegroundColor}">
-                            <Underline>U</Underline>pdates
-                        </TextBlock>
-                    </ToggleButton.Content>
-                </ToggleButton>
                 <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="Auto" MinWidth="{DynamicResource TabButtonWidth}"
-                    Background="{DynamicResource ButtonWin11ISOBackgroundColor}" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
+                    Background="{DynamicResource ButtonWin11ISOBackgroundColor}" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
                     <ToggleButton.Content>
                         <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}">
                             <Underline>W</Underline>in11 Creator
@@ -1668,154 +1660,7 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="{DynamicResource TabContentMargin}">
-                    <Grid Background="Transparent" MaxWidth="1250" HorizontalAlignment="Center">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-
-                        <StackPanel Grid.Row="0" Margin="10,10,10,14">
-                            <TextBlock Text="Windows Update Profiles"
-                                       FontSize="24"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource MainForegroundColor}"/>
-                            <TextBlock Text="Choose how Windows receives updates. Each profile replaces the Windows Update settings managed by WinUtil."
-                                       Margin="0,6,0,0"
-                                       FontSize="13"
-                                       TextWrapping="Wrap"
-                                       Foreground="{DynamicResource MainForegroundColor}"/>
-                        </StackPanel>
-
-                        <UniformGrid Grid.Row="1" Columns="3">
-                            <Border Style="{StaticResource BorderStyle}"
-                                    BorderBrush="{DynamicResource ProgressBarForegroundColor}"
-                                    BorderThickness="2"
-                                    Padding="16"
-                                    MinHeight="300">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-                                    <StackPanel Grid.Row="0" Margin="0,0,0,14">
-                                        <TextBlock Text="Recommended"
-                                                   FontSize="20"
-                                                   FontWeight="Bold"
-                                                   Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="Balanced security and stability"
-                                                   Margin="0,4,0,0"
-                                                   FontSize="13"
-                                                   Foreground="{DynamicResource MainForegroundColor}"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Row="1">
-                                        <TextBlock Text="- Defers feature updates for 365 days" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Defers quality updates for 4 days" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Excludes drivers from quality updates" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Notifies when downloaded updates are ready to install" TextWrapping="Wrap" Margin="0,0,0,12" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="Available on Windows Pro, Enterprise, and Education editions."
-                                                   FontSize="11"
-                                                   FontStyle="Italic"
-                                                   TextWrapping="Wrap"
-                                                   Foreground="{DynamicResource MainForegroundColor}"/>
-                                    </StackPanel>
-                                    <Button Name="WPFUpdatessecurity"
-                                            Grid.Row="2"
-                                            Content="Apply Recommended"
-                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
-                                            Margin="0,16,0,0"
-                                            Padding="10"/>
-                                </Grid>
-                            </Border>
-
-                            <Border Style="{StaticResource BorderStyle}" Padding="16" MinHeight="300">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-                                    <StackPanel Grid.Row="0" Margin="0,0,0,14">
-                                        <TextBlock Text="Windows Default"
-                                                   FontSize="20"
-                                                   FontWeight="Bold"
-                                                   Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="Return control to Windows"
-                                                   Margin="0,4,0,0"
-                                                   FontSize="13"
-                                                   Foreground="{DynamicResource MainForegroundColor}"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Row="1">
-                                        <TextBlock Text="- Removes Windows Update policies applied by WinUtil" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Restores update service startup settings" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Re-enables update scheduled tasks" TextWrapping="Wrap" Margin="0,0,0,12" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="Use this to undo the Recommended or Disable profile."
-                                                   FontSize="11"
-                                                   FontStyle="Italic"
-                                                   TextWrapping="Wrap"
-                                                   Foreground="{DynamicResource MainForegroundColor}"/>
-                                    </StackPanel>
-                                    <Button Name="WPFUpdatesdefault"
-                                            Grid.Row="2"
-                                            Content="Restore Defaults"
-                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
-                                            Margin="0,16,0,0"
-                                            Padding="10"/>
-                                </Grid>
-                            </Border>
-
-                            <Border Style="{StaticResource BorderStyle}" Padding="16" MinHeight="300">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-                                    <StackPanel Grid.Row="0" Margin="0,0,0,14">
-                                        <TextBlock Text="Disable Updates"
-                                                   FontSize="20"
-                                                   FontWeight="Bold"
-                                                   Foreground="Red"/>
-                                        <TextBlock Text="Advanced use only"
-                                                   Margin="0,4,0,0"
-                                                   FontSize="13"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="Red"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Row="1">
-                                        <TextBlock Text="- Disables automatic update policy" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Stops update services and scheduled tasks" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Clears downloaded update files" TextWrapping="Wrap" Margin="0,0,0,12" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="Security updates will not be installed while this profile is active."
-                                                   FontSize="11"
-                                                   FontStyle="Italic"
-                                                   TextWrapping="Wrap"
-                                                   Foreground="Red"/>
-                                    </StackPanel>
-                                    <Button Name="WPFUpdatesdisable"
-                                            Grid.Row="2"
-                                            Content="Disable Updates"
-                                            FontSize="{DynamicResource ConfigTabButtonFontSize}"
-                                            Foreground="Red"
-                                            Margin="0,16,0,0"
-                                            Padding="10"/>
-                                </Grid>
-                            </Border>
-                        </UniformGrid>
-
-                        <Border Grid.Row="2" Style="{StaticResource BorderStyle}" Margin="8,14,8,8" Padding="12">
-                            <TextBlock Text="Changes apply system-wide. Restart Windows after switching profiles. Use Restore Defaults to undo WinUtil update policies."
-                                       TextWrapping="Wrap"
-                                       HorizontalAlignment="Center"
-                                       Foreground="{DynamicResource MainForegroundColor}"/>
-                        </Border>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Win11ISO" Visibility="Collapsed" Name="WPFTab5">
+            <TabItem Header="Win11ISO" Visibility="Collapsed" Name="WPFTab4">
                 <Grid Name="Win11ISOPanel" Margin="{DynamicResource TabContentMargin}" Background="Transparent">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
@@ -2414,7 +2259,7 @@
 
                 </Grid>
             </TabItem>
-            <TabItem Header="AppX" Visibility="Collapsed" Name="WPFTab6">
+            <TabItem Header="AppX" Visibility="Collapsed" Name="WPFTab5">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
