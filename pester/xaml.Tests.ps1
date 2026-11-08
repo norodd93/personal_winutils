@@ -167,6 +167,7 @@ Describe "XAML document" {
             "WPFTab3BT",
             "WPFTab4BT",
             "WPFTab5BT",
+            "WPFTab6BT",
             "SearchBar",
             "SearchBarIcon",
             "SearchBarClearButton",
@@ -201,7 +202,6 @@ Describe "XAML document" {
             "WPFAdvanced",
             "WPFClearTweaksSelection",
             "WPFGetInstalledTweaks",
-            "WPFAppxRemoval",
             "WPFTweaksbutton",
             "WPFUndoall",
             "WPFUpdatesdefault",
@@ -391,7 +391,7 @@ Describe "XAML document" {
         $comboToggleStyle | Should -Not -BeNullOrEmpty
         $comboToggle.GetAttribute("Style") | Should -Be "{StaticResource ComboBoxToggleButtonStyle}"
         $comboItemStyle | Should -Not -BeNullOrEmpty
-        $navButtons.Count | Should -Be 5
+        $navButtons.Count | Should -Be 6
         foreach ($navButton in $navButtons) {
             $navButton.GetAttribute("Style") | Should -Be "{StaticResource TabToggleButton}"
         }
