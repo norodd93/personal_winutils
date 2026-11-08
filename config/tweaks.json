@@ -64,16 +64,7 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "
-      # Sometimes if you dont stop the Widgets process the removal may fail
-
-      Get-Process *Widget* | Stop-Process
-      Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers
-      Get-AppxPackage MicrosoftWindows.Client.WebExperience -AllUsers | Remove-AppxPackage -AllUsers
-
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      Write-Host \"Removed widgets\"
-      "
+      "\n      # Sometimes if you dont stop the Widgets process the removal may fail\n\n      Get-Process *Widget* | Stop-Process\n      Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers\n      Get-AppxPackage MicrosoftWindows.Client.WebExperience -AllUsers | Remove-AppxPackage -AllUsers\n\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\n      Write-Host \"Removed widgets\"\n      "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/widget"
   },
@@ -183,17 +174,10 @@
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "
-      # A threshold above the physical memory disables svchost service splitting
-      $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB
-      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory -Type DWord
-      "
+      "\n      # A threshold above the physical memory disables svchost service splitting\n      $Memory = (Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB\n      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value $Memory -Type DWord\n      "
     ],
     "UndoScript": [
-      "
-      # Windows client default (0x380000): splitting back on
-      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value 3670016 -Type DWord -Force
-      "
+      "\n      # Windows client default (0x380000): splitting back on\n      Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name SvcHostSplitThresholdInKB -Value 3670016 -Type DWord -Force\n      "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/svchostsplitting"
   },
@@ -568,40 +552,10 @@
       }
     ],
     "InvokeScript": [
-      "
-      # Disable Defender Auto Sample Submission
-      try {
-          Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction Stop
-      } catch {
-          # Skip Defender error 0x800106ba when its service is unavailable; other errors must fail.
-          if ($_.Exception.Message -notmatch '\\b0x800106ba\\b' -and $_.Exception.HResult -ne 0x800106BA) {
-              throw
-          }
-          Write-Warning 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'
-          Write-WinUtilLog -Level 'WARN' -Component 'Script' -Message 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'
-      }
-
-      # Disable PowerShell 7 telemetry
-      [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
-      "
+      "\n      # Disable Defender Auto Sample Submission\n      try {\n          Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction Stop\n      } catch {\n          # Skip Defender error 0x800106ba when its service is unavailable; other errors must fail.\n          if ($_.Exception.Message -notmatch '\\b0x800106ba\\b' -and $_.Exception.HResult -ne 0x800106BA) {\n              throw\n          }\n          Write-Warning 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'\n          Write-WinUtilLog -Level 'WARN' -Component 'Script' -Message 'Defender sample submission preference could not be changed; Defender may be unavailable or disabled.'\n      }\n\n      # Disable PowerShell 7 telemetry\n      [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')\n      "
     ],
     "UndoScript": [
-      "
-      # Enable Defender Auto Sample Submission
-      try {
-          Set-MpPreference -SubmitSamplesConsent 1 -ErrorAction Stop
-      } catch {
-          # Skip Defender error 0x800106ba when its service is unavailable; other errors must fail.
-          if ($_.Exception.Message -notmatch '\\b0x800106ba\\b' -and $_.Exception.HResult -ne 0x800106BA) {
-              throw
-          }
-          Write-Warning 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'
-          Write-WinUtilLog -Level 'WARN' -Component 'Script' -Message 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'
-      }
-
-      # Enable PowerShell 7 telemetry
-      [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')
-      "
+      "\n      # Enable Defender Auto Sample Submission\n      try {\n          Set-MpPreference -SubmitSamplesConsent 1 -ErrorAction Stop\n      } catch {\n          # Skip Defender error 0x800106ba when its service is unavailable; other errors must fail.\n          if ($_.Exception.Message -notmatch '\\b0x800106ba\\b' -and $_.Exception.HResult -ne 0x800106BA) {\n              throw\n          }\n          Write-Warning 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'\n          Write-WinUtilLog -Level 'WARN' -Component 'Script' -Message 'Defender sample submission preference could not be restored; Defender may be unavailable or disabled.'\n      }\n\n      # Enable PowerShell 7 telemetry\n      [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')\n      "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/telemetry"
   },
@@ -630,25 +584,39 @@
       "
       $EdgeAppDir = \"$Env:ProgramFiles (x86)\\Microsoft\\Edge\\Application\"
       $Path = $null
-      if (Test-Path -LiteralPath $EdgeAppDir -ErrorAction Stop) {
-          $InstallerPattern = Join-Path $EdgeAppDir \"*\\Installer\\setup.exe\"
-          if (Test-Path -Path $InstallerPattern -ErrorAction Stop) {
-              $Path = Resolve-Path -Path $InstallerPattern -ErrorAction Stop | Select-Object -Last 1
+      try {
+          if (Test-Path -LiteralPath $EdgeAppDir -ErrorAction Stop) {
+              $InstallerPattern = Join-Path $EdgeAppDir \"*\\Installer\\setup.exe\"
+              if (Test-Path -Path $InstallerPattern -ErrorAction Stop) {
+                  $Path = (Get-ChildItem -Path $InstallerPattern -ErrorAction Stop | Sort-Object FullName -Descending | Select-Object -First 1).FullName
+              }
           }
+      } catch {
+          Write-WinUtilLog -Level \"ERROR\" -Component \"RemoveEdge\" -Message \"Failed to locate Edge installer: $($_.Exception.Message)\"
+          Write-WinUtilHost \"Failed to locate Edge installer.\"
+          return
       }
 
       if ($Path) {
-          New-Item -Path \"$Env:SystemRoot\\SystemApps\\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\\MicrosoftEdge.exe\" -Force
-          Start-Process -FilePath $Path -ArgumentList \"--uninstall --system-level --force-uninstall --delete-profile\" -Wait
-          Write-Host \"Microsoft Edge was removed\"
+          try {
+              New-Item -Path \"$Env:SystemRoot\\SystemApps\\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\\MicrosoftEdge.exe\" -Force -ErrorAction Stop | Out-Null
+              Start-Process -FilePath $Path -ArgumentList \"--uninstall --system-level --force-uninstall --delete-profile\" -Wait -ErrorAction Stop
+              Write-WinUtilHost \"Microsoft Edge was removed\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"RemoveEdge\" -Message \"Microsoft Edge was removed\"
+          } catch {
+              Write-WinUtilLog -Level \"ERROR\" -Component \"RemoveEdge\" -Message \"Failed to uninstall Edge: $($_.Exception.Message)\"
+              Write-WinUtilHost \"Failed to uninstall Microsoft Edge.\"
+          }
       } else {
-          Write-Host \"Microsoft Edge is not installed\"
+          Write-WinUtilHost \"Microsoft Edge is not installed\"
+          Write-WinUtilLog -Level \"INFO\" -Component \"RemoveEdge\" -Message \"Microsoft Edge is not installed\"
       }
       "
     ],
     "UndoScript": [
       "
-      Write-Host \"Installing Microsoft Edge...\"
+      Write-WinUtilHost \"Installing Microsoft Edge...\"
+      Write-WinUtilLog -Level \"INFO\" -Component \"RemoveEdge\" -Message \"Installing Microsoft Edge via winget\"
       winget install Microsoft.Edge --source winget
       "
     ],
@@ -661,12 +629,21 @@
     "panel": "1",
     "InvokeScript": [
       "
-      $bitLockerVolume = Get-BitLockerVolume -MountPoint $Env:SystemDrive -ErrorAction Stop
+      try {
+          $bitLockerVolume = Get-BitLockerVolume -MountPoint $Env:SystemDrive -ErrorAction Stop
 
-      if ($bitLockerVolume.VolumeStatus -eq 'FullyDecrypted') {
-          Write-Host \"BitLocker is already disabled on $($Env:SystemDrive).\"
-      } else {
-          Disable-BitLocker -MountPoint $Env:SystemDrive -ErrorAction Stop
+          if ($bitLockerVolume.VolumeStatus -eq 'FullyDecrypted') {
+              Write-WinUtilHost \"BitLocker is already disabled on $($Env:SystemDrive).\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableBitLocker\" -Message \"BitLocker is already disabled on $($Env:SystemDrive)\"
+          } else {
+              Disable-BitLocker -MountPoint $Env:SystemDrive -ErrorAction Stop
+              Write-WinUtilHost \"BitLocker has been disabled on $($Env:SystemDrive).\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableBitLocker\" -Message \"BitLocker disabled on $($Env:SystemDrive)\"
+          }
+      } catch {
+          Write-WinUtilLog -Level \"ERROR\" -Component \"DisableBitLocker\" -Message \"Failed to disable BitLocker: $($_.Exception.Message)\"
+          Write-WinUtilHost \"Failed to disable BitLocker.\"
+          throw
       }
       "
     ],
@@ -701,62 +678,88 @@
       $OneDrivePath = $Env:OneDrive
       $OneDriveFolderExists = -not [string]::IsNullOrWhiteSpace($OneDrivePath) -and (Test-Path -LiteralPath $OneDrivePath -PathType Container -ErrorAction Stop)
 
+      $OneDriveAcl = $null
       if ($OneDriveFolderExists) {
-          $OneDriveAcl = Get-Acl -LiteralPath $OneDrivePath -ErrorAction Stop
+          try {
+              $OneDriveAcl = Get-Acl -LiteralPath $OneDrivePath -ErrorAction Stop
+          } catch {
+              Write-WinUtilLog -Level \"ERROR\" -Component \"RemoveOneDrive\" -Message \"Failed to capture OneDrive ACL: $($_.Exception.Message)\"
+              Write-WinUtilHost \"Failed to capture OneDrive folder permissions.\"
+          }
       } else {
-          Write-Host \"OneDrive folder is already absent; skipping folder permissions and cleanup.\"
+          Write-WinUtilHost \"OneDrive folder is already absent; skipping folder permissions and cleanup.\"
+          Write-WinUtilLog -Level \"INFO\" -Component \"RemoveOneDrive\" -Message \"OneDrive folder is already absent; skipping folder permissions and cleanup.\"
       }
 
       try {
+          # Protect user files while the uninstaller runs.
           if ($OneDriveFolderExists) {
-              # Protect user files while the uninstaller runs.
-              icacls $OneDrivePath /deny \"*S-1-5-32-544:(D,DC)\"
+              icacls $OneDrivePath /deny \"*S-1-5-32-544:(D,DC)\" -ErrorAction Stop
               if ($LASTEXITCODE -ne 0) { throw \"Unable to protect the OneDrive folder (icacls exit code $LASTEXITCODE).\" }
           }
 
-          Write-Host \"Uninstalling OneDrive...\"
+          Write-WinUtilHost \"Uninstalling OneDrive...\"
           Start-Process -FilePath (Join-Path $Env:SystemRoot \"System32\\OneDriveSetup.exe\") -ArgumentList '/uninstall' -Wait -ErrorAction Stop
 
-          # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
-          Write-Host \"Removing leftover OneDrive Files...\"
-
-          Get-Process -ErrorAction Stop | Where-Object ProcessName -eq 'FileCoAuth' | Stop-Process -ErrorAction Stop
-          Get-Process -ErrorAction Stop | Where-Object ProcessName -eq 'Explorer' | Stop-Process -ErrorAction Stop
+          Write-WinUtilHost \"Removing leftover OneDrive Files...\"
+          $fileCoAuth = Get-Process -ErrorAction SilentlyContinue | Where-Object ProcessName -eq 'FileCoAuth'
+          if ($fileCoAuth) { $fileCoAuth | Stop-Process -ErrorAction Stop }
+          $explorer = Get-Process -ErrorAction SilentlyContinue | Where-Object ProcessName -eq 'Explorer'
+          if ($explorer) { $explorer | Stop-Process -ErrorAction Stop }
 
           $OneDriveLeftovers = @(\"$Env:LocalAppData\\Microsoft\\OneDrive\", \"$Env:ProgramData\\Microsoft OneDrive\")
           foreach ($LeftoverPath in $OneDriveLeftovers) {
-              if (Test-Path -LiteralPath $LeftoverPath -ErrorAction Stop) {
+              if (Test-Path -LiteralPath $LeftoverPath -PathType Container -ErrorAction Stop) {
                   Remove-Item -LiteralPath $LeftoverPath -Recurse -Force -ErrorAction Stop
               }
           }
+
+          # OneSyncSvc is a per-user template; Get-Service only exposes user instances.
+          # Skip the operation if this Windows installation has no template.
+          if (Test-Path -LiteralPath 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\OneSyncSvc') {
+              Set-Service -Name OneSyncSvc -StartupType Disabled -ErrorAction Stop
+          }
+      } catch {
+          Write-WinUtilLog -Level \"ERROR\" -Component \"RemoveOneDrive\" -Message \"OneDrive removal failed: $($_.Exception.Message)\"
+          throw
       } finally {
-          if ($OneDriveFolderExists) {
+          if ($OneDriveFolderExists -and $OneDriveAcl) {
               # Restore access even when uninstall or leftover cleanup fails.
-              Set-Acl -LiteralPath $OneDrivePath -AclObject $OneDriveAcl -ErrorAction Stop
+              try {
+                  Set-Acl -LiteralPath $OneDrivePath -AclObject $OneDriveAcl -ErrorAction Stop
+              } catch {
+                  Write-WinUtilLog -Level \"WARN\" -Component \"RemoveOneDrive\" -Message \"Failed to restore OneDrive ACL: $($_.Exception.Message)\"
+              }
           }
       }
 
-      if ($OneDriveFolderExists -and -not (Get-ChildItem -LiteralPath $OneDrivePath -Force -ErrorAction Stop)) {
-          # Refuse to delete if files appeared after the emptiness check.
-          [System.IO.Directory]::Delete($OneDrivePath, $false)
-          [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
-      }
-
-      # OneSyncSvc is a per-user template; Get-Service only exposes user instances.
-      # Skip the operation if this Windows installation has no template.
-      if (Test-Path -LiteralPath 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\OneSyncSvc') {
-          Set-Service -Name OneSyncSvc -StartupType Disabled
+      if ($OneDriveFolderExists) {
+          try {
+              $isEmpty = (-not [System.IO.Directory]::EnumerateFileSystemEntries($OneDrivePath)) -and (Test-Path -LiteralPath $OneDrivePath -PathType Container)
+          } catch {
+              $isEmpty = $false
+          }
+          if ($isEmpty) {
+              # Refuse to delete if files appeared after the emptiness check.
+              try {
+                  [System.IO.Directory]::Delete($OneDrivePath, $false)
+                  [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
+              } catch {
+                  Write-WinUtilLog -Level \"ERROR\" -Component \"RemoveOneDrive\" -Message \"Failed to delete OneDrive folder: $($_.Exception.Message)\"
+              }
+          }
       }
       "
     ],
     "UndoScript": [
       "
-      Write-Host \"Installing OneDrive\"
+      Write-WinUtilHost \"Installing OneDrive\"
+      Write-WinUtilLog -Level \"INFO\" -Component \"RemoveOneDrive\" -Message \"Installing OneDrive via winget\"
       winget install Microsoft.Onedrive --source winget
 
       # Enable OneSyncSvc when the per-user service template exists
       if (Test-Path -LiteralPath 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\OneSyncSvc') {
-          Set-Service -Name OneSyncSvc -StartupType Automatic
+          Set-Service -Name OneSyncSvc -StartupType Automatic -ErrorAction Stop
       }
       "
     ],
@@ -1257,10 +1260,50 @@
       }
     ],
     "InvokeScript": [
-      "$search = Get-Service -Name WSearch -ErrorAction SilentlyContinue\n      if ($search -and $search.StartType -eq 'Disabled' -and $search.Status -ne 'Stopped') {\n        Stop-Service -Name WSearch -Force -ErrorAction Stop\n      }"
+      "
+      try {
+          $search = Get-Service -Name WSearch -ErrorAction Stop
+          if ($search.StartType -eq 'Disabled' -and $search.Status -ne 'Stopped') {
+              Stop-Service -Name WSearch -Force -ErrorAction Stop
+              Write-WinUtilHost \"Windows Search (WSearch) has been stopped.\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableSearchIndexing\" -Message \"WSearch service stopped\"
+          } elseif ($search.Status -eq 'Stopped') {
+              Write-WinUtilHost \"Windows Search (WSearch) is already stopped.\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableSearchIndexing\" -Message \"WSearch service is already stopped\"
+          } else {
+              Write-WinUtilHost \"Windows Search (WSearch) was already disabled.\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableSearchIndexing\" -Message \"WSearch service was already disabled\"
+          }
+      } catch {
+          Write-WinUtilLog -Level \"ERROR\" -Component \"DisableSearchIndexing\" -Message \"Failed to stop WSearch service: $($_.Exception.Message)\"
+          Write-WinUtilHost \"Failed to stop Windows Search service.\"
+          throw
+      }
+      "
     ],
     "UndoScript": [
-      "$search = Get-Service -Name WSearch -ErrorAction SilentlyContinue\n      if ($search -and $search.StartType -eq 'Automatic' -and $search.Status -ne 'Running') {\n        Start-Service -Name WSearch -ErrorAction Stop\n      }"
+      "
+      try {
+          $search = Get-Service -Name WSearch -ErrorAction Stop
+          if ($search.StartType -eq 'Automatic' -and $search.Status -ne 'Running') {
+              Start-Service -Name WSearch -ErrorAction Stop
+              Write-WinUtilHost \"Windows Search (WSearch) has been started and enabled.\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableSearchIndexing\" -Message \"WSearch service started and enabled\"
+          } elseif ($search.Status -eq 'Running') {
+              Write-WinUtilHost \"Windows Search (WSearch) is already running.\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableSearchIndexing\" -Message \"WSearch service is already running\"
+          } else {
+              Write-WinUtilHost \"Windows Search (WSearch) was not running and will be started.\"
+              Start-Service -Name WSearch -ErrorAction Stop
+              Write-WinUtilHost \"Windows Search (WSearch) has been started.\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableSearchIndexing\" -Message \"WSearch service started\"
+          }
+      } catch {
+          Write-WinUtilLog -Level \"ERROR\" -Component \"DisableSearchIndexing\" -Message \"Failed to start WSearch service: $($_.Exception.Message)\"
+          Write-WinUtilHost \"Failed to start Windows Search service.\"
+          throw
+      }
+      "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/disablesearchindexing"
   },
@@ -1279,10 +1322,43 @@
       }
     ],
     "InvokeScript": [
-      "Disable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
+      "
+      try {
+          # Get all active network adapters and disable the TCPIP6 binding for each
+          $adapters = Get-NetAdapter -ErrorAction Stop | Where-Object { $_.Status -eq 'Up' }
+          if ($adapters) {
+              foreach ($adapter in $adapters) {
+                  Disable-NetAdapterBinding -InterfaceAlias $adapter.Name -ComponentID ms_tcpip6 -ErrorAction Stop
+                  Write-WinUtilLog -Level \"INFO\" -Component \"DisableIPv6\" -Message \"Disabled ms_tcpip6 binding on adapter: $($adapter.Name)\"
+              }
+              Write-WinUtilHost \"IPv6 disabled on all active network adapters.\"
+          } else {
+              Write-WinUtilHost \"No active network adapters found; skipping binding changes.\"
+          }
+      } catch {
+          Write-WinUtilLog -Level \"ERROR\" -Component \"DisableIPv6\" -Message \"Failed to disable IPv6: $($_.Exception.Message)\"
+          Write-WinUtilHost \"Failed to disable IPv6.\"
+          throw
+      }
+      "
     ],
     "UndoScript": [
-      "Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
+      "
+      try {
+          $adapters = Get-NetAdapter -ErrorAction Stop | Where-Object { $_.Status -eq 'Up' }
+          if ($adapters) {
+              foreach ($adapter in $adapters) {
+                  Enable-NetAdapterBinding -InterfaceAlias $adapter.Name -ComponentID ms_tcpip6 -ErrorAction Stop
+                  Write-WinUtilLog -Level \"INFO\" -Component \"DisableIPv6\" -Message \"Re-enabled ms_tcpip6 binding on adapter: $($adapter.Name)\"
+              }
+              Write-WinUtilHost \"IPv6 enabled on all active network adapters.\"
+          }
+      } catch {
+          Write-WinUtilLog -Level \"ERROR\" -Component \"DisableIPv6\" -Message \"Failed to re-enable IPv6: $($_.Exception.Message)\"
+          Write-WinUtilHost \"Failed to re-enable IPv6.\"
+          throw
+      }
+      "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/disableipv6"
   },
@@ -1309,50 +1385,69 @@
     "panel": "1",
     "InvokeScript": [
       "
-      # Previously detected folders
       $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
-
-      # Folder types lookup table
       $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
-      # Flush Explorer view database
-      Remove-Item -Path $bags -Recurse -Force
-      Write-Host \"Removed $bags\"
+      try {
+          # Flush Explorer view database
+          if (Test-Path -LiteralPath $bags) {
+              Remove-Item -Path $bags -Recurse -Force -ErrorAction Stop
+              Write-WinUtilHost \"Removed $bags\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableExplorerAutoDiscovery\" -Message \"Removed $bags\"
+          }
 
-      Remove-Item -Path $bagMRU -Recurse -Force
-      Write-Host \"Removed $bagMRU\"
+          if (Test-Path -LiteralPath $bagMRU) {
+              Remove-Item -Path $bagMRU -Recurse -Force -ErrorAction Stop
+              Write-WinUtilHost \"Removed $bagMRU\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableExplorerAutoDiscovery\" -Message \"Removed $bagMRU\"
+          }
 
-      # Every folder
-      $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
+          $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
 
-      if (!(Test-Path $allFolders)) {
-        New-Item -Path $allFolders -Force
-        Write-Host \"Created $allFolders\"
+          if (!(Test-Path $allFolders)) {
+              New-Item -Path $allFolders -Force -ErrorAction Stop | Out-Null
+              Write-WinUtilHost \"Created $allFolders\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableExplorerAutoDiscovery\" -Message \"Created $allFolders\"
+          }
+
+          # Generic view
+          New-ItemProperty -Path $allFolders -Name \"FolderType\" -Value \"NotSpecified\" -PropertyType String -Force -ErrorAction Stop | Out-Null
+          Write-WinUtilHost \"Set FolderType to NotSpecified\"
+          Write-WinUtilLog -Level \"INFO\" -Component \"DisableExplorerAutoDiscovery\" -Message \"Set FolderType to NotSpecified\"
+      } catch {
+          Write-WinUtilLog -Level \"ERROR\" -Component \"DisableExplorerAutoDiscovery\" -Message \"Failed to apply auto-discovery disable: $($_.Exception.Message)\"
+          Write-WinUtilHost \"Failed to disable Explorer automatic folder discovery.\"
+          throw
       }
 
-      # Generic view
-      New-ItemProperty -Path $allFolders -Name \"FolderType\" -Value \"NotSpecified\" -PropertyType String -Force
-      Write-Host \"Set FolderType to NotSpecified\"
-
-      Write-Host Please sign out and back in, or restart your computer to apply the changes!
+      Write-WinUtilHost \"Please sign out and back in, or restart your computer to apply the changes!\"
       "
     ],
     "UndoScript": [
       "
-      # Previously detected folders
       $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
-
-      # Folder types lookup table
       $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
 
-      # Flush Explorer view database
-      Remove-Item -Path $bags -Recurse -Force
-      Write-Host \"Removed $bags\"
+      try {
+          # Flush Explorer view database
+          if (Test-Path -LiteralPath $bags) {
+              Remove-Item -Path $bags -Recurse -Force -ErrorAction Stop
+              Write-WinUtilHost \"Removed $bags\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableExplorerAutoDiscovery\" -Message \"Removed $bags\"
+          }
 
-      Remove-Item -Path $bagMRU -Recurse -Force
-      Write-Host \"Removed $bagMRU\"
+          if (Test-Path -LiteralPath $bagMRU) {
+              Remove-Item -Path $bagMRU -Recurse -Force -ErrorAction Stop
+              Write-WinUtilHost \"Removed $bagMRU\"
+              Write-WinUtilLog -Level \"INFO\" -Component \"DisableExplorerAutoDiscovery\" -Message \"Removed $bagMRU\"
+          }
+      } catch {
+          Write-WinUtilLog -Level \"ERROR\" -Component \"DisableExplorerAutoDiscovery\" -Message \"Failed to undo auto-discovery disable: $($_.Exception.Message)\"
+          Write-WinUtilHost \"Failed to undo Explorer automatic folder discovery disable.\"
+          throw
+      }
 
-      Write-Host Please sign out and back in, or restart your computer to apply the changes!
+      Write-WinUtilHost \"Please sign out and back in, or restart your computer to apply the changes!\"
       "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/disableexplorerautodiscovery"
