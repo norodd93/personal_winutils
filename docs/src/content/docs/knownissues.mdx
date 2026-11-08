@@ -45,3 +45,9 @@ winget install --id Microsoft.PowerShell --source winget --installer-type wix
 **Direct MSI from GitHub Releases:** Download the `.msi` installer from the [PowerShell GitHub Releases](https://github.com/PowerShell/PowerShell/releases) page.
 
 For more details see https://github.com/PowerShell/PowerShell/issues/13866
+
+### Pester test: OneDrive removal process stop failure
+
+The `restores permissions and reports a process stop failure` test in `pester/onedrive-removal.Tests.ps1` fails. The test mocks `Stop-Process` to throw `'Process stop denied'` inside a `Get-Process | Where-Object ... | Stop-Process` pipeline, but PowerShell pipeline error handling surfaces the error as a non-terminating pipeline record rather than letting it reach the test's `Should -Throw` assertion.
+
+The OneDrive removal tweak itself works correctly; only this specific Pester assertion is affected. No user-facing behavior is broken.
