@@ -577,7 +577,7 @@
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Microsoft Edge - Remove",
-    "Description": "Attempts to uninstall Microsoft Edge using the legacy system-app uninstall method when supported. On Windows 10/11 builds where required Edge components or installers are not present, the tweak skips safely with an explicit message. Undo attempts reinstall via winget/choco when available.",
+    "Description": "High-risk/advanced (by design): attempts to uninstall Microsoft Edge using a legacy system-app uninstall method where supported. On Windows 10/11 builds where required Edge components or installers are not present, the tweak skips safely with an explicit message. Undo attempts reinstall via winget/choco when available; manual reinstall may be required.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -590,7 +590,7 @@
   },
   "WPFTweaksDisableBitLocker": {
     "Content": "BitLocker - Disable",
-    "Description": "Disables BitLocker on the system drive when BitLocker is available. Undo does not blindly re-enable encryption/protectors (safety); it reports status and guidance when automatic re-enable is not safe.",
+    "Description": "Disables BitLocker on the system drive when BitLocker is available (high-impact). Undo is safety-guarded by design: it does not blindly re-enable encryption/protectors and instead reports status/guidance because safe automatic re-enable may require recovery/protector configuration.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -619,7 +619,7 @@
   },
   "WPFTweaksRemoveOneDrive": {
     "Content": "Microsoft OneDrive - Remove",
-    "Description": "Removes Microsoft OneDrive. Best-effort on Windows 10/11; if OneDrive components or folder state differ, the tweak skips unsafe steps and reports status. Undo attempts reinstall via winget/choco when available and may require manual reinstall on some systems.",
+    "Description": "High-risk/advanced (by design): removes Microsoft OneDrive. Best-effort on Windows 10/11; if OneDrive components or folder state differ, the tweak skips unsafe steps and reports status. Undo attempts reinstall via winget/choco when available and may require manual reinstall on some systems.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -935,7 +935,7 @@
   },
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe URL Block List - Enable",
-    "Description": "Adds a third-party Adobe URL block list to the hosts file (downloaded at runtime) to reduce Adobe network access. Undo removes the WinUtil-added block section. Network access is required to fetch the list when applying.",
+    "Description": "High-risk network/hosts modification (by design): downloads a third-party Adobe URL block list at apply time and appends it to the hosts file between WinUtil markers. Requires network access and trusts the remote list source; undo removes the marked WinUtil-added section. Review suitability for your environment before applying.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -961,7 +961,7 @@
   },
   "WPFTweaksDiskCleanup": {
     "Content": "Disk Cleanup - Run",
-    "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
+    "Description": "Runs Disk Cleanup on drive C: (/VERYLOWDISK) and DISM component store cleanup (/StartComponentCleanup /ResetBase). High-risk/irreversible: /ResetBase prevents uninstalling existing Windows updates and may take a long time or fail on some Windows 10/11 systems. No automatic undo.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
@@ -981,7 +981,7 @@
   },
   "WPFTweaksIPv46": {
     "Content": "IPv6 - Set IPv4 as Preferred",
-    "Description": "Setting the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
+    "Description": "Prefers IPv4 over IPv6 by setting DisabledComponents. Mutually exclusive with other IPv6 mode tweaks; undo the active IPv6 mode before applying a different one (WinUtil blocks conflicting apply/undo).",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -990,14 +990,14 @@
         "Name": "DisabledComponents",
         "Value": "32",
         "Type": "DWord",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/ipv46"
   },
   "WPFTweaksTeredo": {
     "Content": "Teredo - Disable",
-    "Description": "Teredo network tunneling is an IPv6 feature that can cause additional latency, but may cause problems with some games.",
+    "Description": "Disables Teredo IPv6 tunneling. Mutually exclusive with other IPv6 mode tweaks; undo the active IPv6 mode before applying a different one (WinUtil blocks conflicting apply/undo).",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -1006,7 +1006,7 @@
         "Name": "DisabledComponents",
         "Value": "1",
         "Type": "DWord",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
@@ -1039,7 +1039,7 @@
   },
   "WPFTweaksDisableIPv6": {
     "Content": "IPv6 - Disable",
-    "Description": "Disables IPv6.",
+    "Description": "Disables IPv6 via DisabledComponents and adapter bindings. Mutually exclusive with other IPv6 mode tweaks; undo the active IPv6 mode before applying a different one (WinUtil blocks conflicting apply/undo).",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -1048,7 +1048,7 @@
         "Name": "DisabledComponents",
         "Value": "255",
         "Type": "DWord",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
