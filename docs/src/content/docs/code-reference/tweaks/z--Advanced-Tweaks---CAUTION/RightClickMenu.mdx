@@ -8,20 +8,17 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksRightClickMenu": {
     "Content": "Right-Click Menu Previous Layout - Enable",
     "Description": "Restores the classic context menu when right-clicking in File Explorer, replacing the simplified Windows 11 version.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "
-      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name InprocServer32 -Value \"\" -Force
-      Stop-Process -Name explorer
-      "
+      "      $osBuild = 0\n      try { $osBuild = [int](Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).BuildNumber } catch { try { $osBuild = [int][Environment]::OSVersion.Version.Build } catch { $osBuild = 0 } }\n      if ($osBuild -gt 0 -and $osBuild -lt 22000) {\n        Write-WinUtilHost \"Classic right-click menu is typically default on Windows 10 (build $osBuild). Applying override is usually unnecessary but will proceed.\"\n        Write-WinUtilLog -Level 'INFO' -Component 'RightClickMenu' -Message \"Applying classic context menu override on Windows 10 build $osBuild (usually not required).\"\n      }\n      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name InprocServer32 -Value \"\" -Force | Out-Null\n      try { Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue } catch {}\n      Write-WinUtilHost 'Classic context menu override applied (Explorer restarted where possible).'\n      Write-WinUtilLog -Level 'INFO' -Component 'RightClickMenu' -Message 'Applied classic context menu override.'"
     ],
     "UndoScript": [
-      "Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse"
+      "      Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Force -ErrorAction SilentlyContinue\n      try { Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue } catch {}\n      Write-WinUtilHost 'Classic context menu override removed (Explorer restarted where possible).'\n      Write-WinUtilLog -Level 'INFO' -Component 'RightClickMenu' -Message 'Removed classic context menu override.'"
     ],
   }
-```
+````

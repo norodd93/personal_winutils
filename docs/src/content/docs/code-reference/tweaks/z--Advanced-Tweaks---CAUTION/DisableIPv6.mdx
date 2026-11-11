@@ -1,6 +1,6 @@
 ---
 title: "IPv6 - Disable"
-description: "Disables IPv6."
+description: "Disables IPv6 via DisabledComponents and adapter bindings. Mutually exclusive with other IPv6 mode tweaks; undo the active IPv6 mode before applying a different one (WinUtil blocks conflicting apply/undo)."
 editUrl: false
 ---
 
@@ -8,10 +8,10 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksDisableIPv6": {
     "Content": "IPv6 - Disable",
-    "Description": "Disables IPv6.",
+    "Description": "Disables IPv6 via DisabledComponents and adapter bindings. Mutually exclusive with other IPv6 mode tweaks; undo the active IPv6 mode before applying a different one (WinUtil blocks conflicting apply/undo).",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -20,17 +20,17 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
         "Name": "DisabledComponents",
         "Value": "255",
         "Type": "DWord",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
-      "Disable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
+      "      try {\n          # Get all active network adapters and disable the TCPIP6 binding for each\n          $adapters = Get-NetAdapter -ErrorAction Stop | Where-Object { $_.Status -eq 'Up' }\n          if ($adapters) {\n              foreach ($adapter in $adapters) {\n                  Disable-NetAdapterBinding -InterfaceAlias $adapter.Name -ComponentID ms_tcpip6 -ErrorAction Stop\n                  Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableIPv6\\\" -Message \\\"Disabled ms_tcpip6 binding on adapter: $($adapter.Name)\\\"\n              }\n              Write-WinUtilHost \\\"IPv6 disabled on all active network adapters.\\\"\n          } else {\n              Write-WinUtilHost \\\"No active network adapters found; skipping binding changes.\\\"\n          }\n      } catch {\n          Write-WinUtilLog -Level \\\"ERROR\\\" -Component \\\"DisableIPv6\\\" -Message \\\"Failed to disable IPv6: $($_.Exception.Message)\\\"\n          Write-WinUtilHost \\\"Failed to disable IPv6.\\\"\n          throw\n      }"
     ],
     "UndoScript": [
-      "Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
+      "      try {\n          $adapters = Get-NetAdapter -ErrorAction Stop | Where-Object { $_.Status -eq 'Up' }\n          if ($adapters) {\n              foreach ($adapter in $adapters) {\n                  Enable-NetAdapterBinding -InterfaceAlias $adapter.Name -ComponentID ms_tcpip6 -ErrorAction Stop\n                  Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableIPv6\\\" -Message \\\"Re-enabled ms_tcpip6 binding on adapter: $($adapter.Name)\\\"\n              }\n              Write-WinUtilHost \\\"IPv6 enabled on all active network adapters.\\\"\n          }\n      } catch {\n          Write-WinUtilLog -Level \\\"ERROR\\\" -Component \\\"DisableIPv6\\\" -Message \\\"Failed to re-enable IPv6: $($_.Exception.Message)\\\"\n          Write-WinUtilHost \\\"Failed to re-enable IPv6.\\\"\n          throw\n      }"
     ],
   }
-```
+````
 
 ## Registry Changes
 

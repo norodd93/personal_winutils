@@ -1,6 +1,6 @@
 ---
 title: "BitLocker - Disable"
-description: "Disables BitLocker."
+description: "Disables BitLocker on the system drive when BitLocker is available (high-impact). Undo is safety-guarded by design: it does not blindly re-enable encryption/protectors and instead reports status/guidance because safe automatic re-enable may require recovery/protector configuration."
 editUrl: false
 ---
 
@@ -8,17 +8,17 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksDisableBitLocker": {
     "Content": "BitLocker - Disable",
-    "Description": "Disables BitLocker.",
+    "Description": "Disables BitLocker on the system drive when BitLocker is available (high-impact). Undo is safety-guarded by design: it does not blindly re-enable encryption/protectors and instead reports status/guidance because safe automatic re-enable may require recovery/protector configuration.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "Disable-BitLocker -MountPoint $Env:SystemDrive"
+      "      if (-not (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue)) {\n          Write-WinUtilHost 'BitLocker is not available on this system.'\n          Write-WinUtilLog -Level 'WARN' -Component 'DisableBitLocker' -Message 'BitLocker is not available on this system.'\n          return\n      }\n\n      try {\n          $bitLockerVolume = Get-BitLockerVolume -MountPoint $Env:SystemDrive -ErrorAction Stop\n\n          if ($bitLockerVolume.VolumeStatus -eq 'FullyDecrypted') {\n              Write-WinUtilHost \\\"BitLocker is already disabled on $($Env:SystemDrive).\\\"\n              Write-WinUtilLog -Level 'INFO' -Component 'DisableBitLocker' -Message \\\"BitLocker is already disabled on $($Env:SystemDrive)\\\"\n          } else {\n              Disable-BitLocker -MountPoint $Env:SystemDrive -ErrorAction Stop\n              Write-WinUtilHost \\\"BitLocker has been disabled on $($Env:SystemDrive).\\\"\n              Write-WinUtilLog -Level 'INFO' -Component 'DisableBitLocker' -Message \\\"BitLocker disabled on $($Env:SystemDrive)\\\"\n          }\n      } catch {\n          Write-WinUtilLog -Level 'ERROR' -Component 'DisableBitLocker' -Message \\\"Failed to disable BitLocker: $($_.Exception.Message)\\\"\n          Write-WinUtilHost 'Failed to disable BitLocker.'\n          throw\n      }"
     ],
     "UndoScript": [
-      "Enable-BitLocker -MountPoint $Env:SystemDrive"
+      "      if (-not (Get-Command Enable-BitLocker -ErrorAction SilentlyContinue) -or -not (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue)) {\n          $msg = 'BitLocker cmdlets are not available on this system. Cannot safely re-enable BitLocker automatically.'\n          Write-WinUtilHost $msg\n          Write-WinUtilLog -Level 'WARN' -Component 'DisableBitLocker' -Message $msg\n          return\n      }\n      try {\n          $vol = Get-BitLockerVolume -MountPoint $Env:SystemDrive -ErrorAction Stop\n          if ($vol.ProtectionStatus -eq 'On' -and $vol.VolumeStatus -ne 'FullyDecrypted') {\n              Write-WinUtilHost \"BitLocker protection already appears enabled on $($Env:SystemDrive).\"\n              Write-WinUtilLog -Level 'INFO' -Component 'DisableBitLocker' -Message \"BitLocker already enabled/protected on $($Env:SystemDrive); skipping.\"\n              return\n          }\n          $msg = 'Automatic BitLocker re-enable was skipped for safety (protectors/recovery configuration may be required). Enable BitLocker manually from Windows Security/Manage BitLocker if needed.'\n          Write-WinUtilHost $msg\n          Write-WinUtilLog -Level 'WARN' -Component 'DisableBitLocker' -Message $msg\n      } catch {\n          $msg = \"Unable to determine BitLocker state or safely re-enable: $($_.Exception.Message)\"\n          Write-WinUtilHost $msg\n          Write-WinUtilLog -Level 'WARN' -Component 'DisableBitLocker' -Message $msg\n      }"
     ],
   }
-```
+````

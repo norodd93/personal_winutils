@@ -1,6 +1,6 @@
 ---
 title: "Microsoft Store Recommended Search Results - Disable"
-description: "Will not display recommended Microsoft Store apps when searching for apps in the Start menu."
+description: "Disables Microsoft Store recommended search results by restricting the local Store search database when present. Skips safely if the database is not found (common on some Windows 10/11 profiles)."
 editUrl: false
 ---
 
@@ -8,17 +8,17 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksDisableStoreSearch": {
     "Content": "Microsoft Store Recommended Search Results - Disable",
-    "Description": "Will not display recommended Microsoft Store apps when searching for apps in the Start menu.",
+    "Description": "Disables Microsoft Store recommended search results by restricting the local Store search database when present. Skips safely if the database is not found (common on some Windows 10/11 profiles).",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /deny *S-1-1-0:F"
+      "      $storeDb = Join-Path $Env:LocalAppData 'Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db'\n      if (-not (Test-Path -LiteralPath $storeDb)) {\n        Write-WinUtilHost \"Microsoft Store search database not found at '$storeDb'. Skipping (not applicable on this profile/system).\"\n        Write-WinUtilLog -Level 'WARN' -Component 'StoreSearch' -Message \"Store database not found; skipping: $storeDb\"\n        return\n      }\n      icacls $storeDb /deny *S-1-1-0:F\n      if ($LASTEXITCODE -ne 0) { throw \"icacls failed with exit code $LASTEXITCODE while denying access to $storeDb\" }"
     ],
     "UndoScript": [
-      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /grant *S-1-1-0:F"
+      "      $storeDb = Join-Path $Env:LocalAppData 'Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db'\n      if (-not (Test-Path -LiteralPath $storeDb)) {\n        Write-WinUtilHost \"Microsoft Store search database not found at '$storeDb'. Nothing to restore.\"\n        Write-WinUtilLog -Level 'WARN' -Component 'StoreSearch' -Message \"Store database not found during undo; skipping: $storeDb\"\n        return\n      }\n      icacls $storeDb /grant *S-1-1-0:F\n      if ($LASTEXITCODE -ne 0) { throw \"icacls failed with exit code $LASTEXITCODE while restoring access to $storeDb\" }"
     ],
   }
-```
+````

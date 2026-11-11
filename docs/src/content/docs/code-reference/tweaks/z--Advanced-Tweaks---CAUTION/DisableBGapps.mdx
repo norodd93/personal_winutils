@@ -1,6 +1,6 @@
 ---
 title: "Background Apps - Disable"
-description: "Disables all Microsoft Store apps from running in the background, which has to be done individually since Windows 11."
+description: "Disables background activity for Microsoft Store apps where supported. On Windows 10 this global policy is commonly effective; on Windows 11 per-app background behavior may differ. Applied best-effort."
 editUrl: false
 ---
 
@@ -8,10 +8,10 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksDisableBGapps": {
     "Content": "Background Apps - Disable",
-    "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Windows 11.",
+    "Description": "Disables background activity for Microsoft Store apps where supported. On Windows 10 this global policy is commonly effective; on Windows 11 per-app background behavior may differ. Applied best-effort.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -24,7 +24,7 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
       }
     ],
   }
-```
+````
 
 ## Registry Changes
 

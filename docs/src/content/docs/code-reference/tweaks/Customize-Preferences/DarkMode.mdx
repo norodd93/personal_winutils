@@ -8,7 +8,7 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",
     "Description": "Dark Mode for the system and applications.",
@@ -34,23 +34,13 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
       }
     ],
     "InvokeScript": [
-      "
-      Invoke-WinUtilExplorerUpdate
-      if ($sync.ThemeButton.Content -eq [char]0xF08C) {
-        Invoke-WinutilThemeChange -theme \"Auto\"
-      }
-      "
+      "      Invoke-WinUtilExplorerUpdate\n      if ($sync.ThemeButton.Content -eq [char]0xF08C) {\n        Invoke-WinutilThemeChange -theme \\\"Auto\\\"\n      }"
     ],
     "UndoScript": [
-      "
-      Invoke-WinUtilExplorerUpdate
-      if ($sync.ThemeButton.Content -eq [char]0xF08C) {
-        Invoke-WinutilThemeChange -theme \"Auto\"
-      }
-      "
+      "      Invoke-WinUtilExplorerUpdate\n      if ($sync.ThemeButton.Content -eq [char]0xF08C) {\n        Invoke-WinutilThemeChange -theme \\\"Auto\\\"\n      }"
     ],
   }
-```
+````
 
 ## Registry Changes
 

@@ -1,6 +1,6 @@
 ---
 title: "Microsoft Edge - Remove"
-description: "Uninstalls Microsoft Edge by creating dummy MicrosoftEdge.exe file in the legacy Edge folder. This tricks Windows into unlocking the official Edge uninstaller allowing for a system-level removal."
+description: "High-risk/advanced (by design): attempts to uninstall Microsoft Edge using a legacy system-app uninstall method where supported. On Windows 10/11 builds where required Edge components or installers are not present, the tweak skips safely with an explicit message. Undo attempts reinstall via winget/choco when available; manual reinstall may be required."
 editUrl: false
 ---
 
@@ -8,37 +8,17 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksRemoveEdge": {
     "Content": "Microsoft Edge - Remove",
-    "Description": "Uninstalls Microsoft Edge by creating dummy MicrosoftEdge.exe file in the legacy Edge folder. This tricks Windows into unlocking the official Edge uninstaller allowing for a system-level removal.",
+    "Description": "High-risk/advanced (by design): attempts to uninstall Microsoft Edge using a legacy system-app uninstall method where supported. On Windows 10/11 builds where required Edge components or installers are not present, the tweak skips safely with an explicit message. Undo attempts reinstall via winget/choco when available; manual reinstall may be required.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "
-      $EdgeAppDir = \"$Env:ProgramFiles (x86)\\Microsoft\\Edge\\Application\"
-      $Path = $null
-      if (Test-Path -LiteralPath $EdgeAppDir -ErrorAction Stop) {
-          $InstallerPattern = Join-Path $EdgeAppDir \"*\\Installer\\setup.exe\"
-          if (Test-Path -Path $InstallerPattern -ErrorAction Stop) {
-              $Path = Resolve-Path -Path $InstallerPattern -ErrorAction Stop | Select-Object -Last 1
-          }
-      }
-
-      if ($Path) {
-          New-Item -Path \"$Env:SystemRoot\\SystemApps\\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\\MicrosoftEdge.exe\" -Force
-          Start-Process -FilePath $Path -ArgumentList \"--uninstall --system-level --force-uninstall --delete-profile\" -Wait
-          Write-Host \"Microsoft Edge was removed\"
-      } else {
-          Write-Host \"Microsoft Edge is not installed\"
-      }
-      "
+      "      $EdgeAppDir = \"$Env:ProgramFiles (x86)\\Microsoft\\Edge\\Application\"\n      $SetupPath = $null\n      $EdgeSystemAppDir = $null\n\n      try {\n          if (Test-Path -LiteralPath $EdgeAppDir -ErrorAction SilentlyContinue) {\n              $SetupPath = Get-ChildItem -Path (Join-Path $EdgeAppDir '*\\Installer\\setup.exe') -File -ErrorAction SilentlyContinue |\n                  Sort-Object FullName -Descending |\n                  Select-Object -First 1 -ExpandProperty FullName\n          }\n\n          $systemAppsRoot = \"$Env:SystemRoot\\SystemApps\"\n          if (Test-Path -LiteralPath $systemAppsRoot -ErrorAction SilentlyContinue) {\n              $EdgeSystemAppDir = Get-ChildItem -Path $systemAppsRoot -Directory -Filter 'Microsoft.MicrosoftEdge_*' -ErrorAction SilentlyContinue |\n                  Sort-Object FullName -Descending |\n                  Select-Object -First 1 -ExpandProperty FullName\n          }\n\n          if (-not $SetupPath) {\n              $msg = 'Microsoft Edge installer (setup.exe) was not found. Removal is not applicable or not supported on this installation.'\n              Write-WinUtilHost $msg\n              Write-WinUtilLog -Level 'WARN' -Component 'RemoveEdge' -Message $msg\n              return\n          }\n          if (-not $EdgeSystemAppDir) {\n              $msg = 'Legacy Microsoft Edge system app directory was not found. Skipping removal to avoid unsupported changes on this Windows version/installation.'\n              Write-WinUtilHost $msg\n              Write-WinUtilLog -Level 'WARN' -Component 'RemoveEdge' -Message $msg\n              return\n          }\n\n          $DummyEdgePath = Join-Path $EdgeSystemAppDir 'MicrosoftEdge.exe'\n          New-Item -Path $DummyEdgePath -ItemType File -Force -ErrorAction Stop | Out-Null\n\n          $proc = Start-Process -FilePath $SetupPath -ArgumentList '--uninstall --system-level --force-uninstall --delete-profile' -Wait -PassThru -ErrorAction Stop\n          if ($proc.ExitCode -ne 0) {\n              throw \"Edge uninstaller exited with code $($proc.ExitCode)\"\n          }\n          Write-WinUtilHost 'Microsoft Edge removal was attempted successfully.'\n          Write-WinUtilLog -Level 'INFO' -Component 'RemoveEdge' -Message 'Microsoft Edge uninstall command completed.'\n      } catch {\n          Write-WinUtilLog -Level 'ERROR' -Component 'RemoveEdge' -Message \"Failed to remove Edge: $($_.Exception.Message)\"\n          Write-WinUtilHost 'Failed to uninstall Microsoft Edge. This tweak may not be supported on this Windows version/build.'\n          throw\n      }"
     ],
     "UndoScript": [
-      "
-      Write-Host \"Installing Microsoft Edge...\"
-      winget install Microsoft.Edge --source winget
-      "
+      "      Write-WinUtilHost 'Attempting to install Microsoft Edge...'\n      Write-WinUtilLog -Level 'INFO' -Component 'RemoveEdge' -Message 'Attempting to install Microsoft Edge'\n      try {\n          if (Get-Command winget -ErrorAction SilentlyContinue) {\n              $p = Start-Process -FilePath 'winget' -ArgumentList 'install --id Microsoft.Edge --source winget --accept-package-agreements --accept-source-agreements' -Wait -PassThru -NoNewWindow -ErrorAction Stop\n              if ($p.ExitCode -ne 0) { throw \"winget install Microsoft.Edge failed with exit code $($p.ExitCode)\" }\n              Write-WinUtilHost 'Microsoft Edge installation command completed via winget.'\n              return\n          }\n          if (Get-Command choco -ErrorAction SilentlyContinue) {\n              $p = Start-Process -FilePath 'choco' -ArgumentList 'install microsoft-edge -y --no-progress' -Wait -PassThru -NoNewWindow -ErrorAction Stop\n              if ($p.ExitCode -ne 0) { throw \"choco install microsoft-edge failed with exit code $($p.ExitCode)\" }\n              Write-WinUtilHost 'Microsoft Edge installation command completed via Chocolatey.'\n              return\n          }\n          $msg = 'Neither winget nor choco is available to reinstall Microsoft Edge automatically. Please reinstall Edge manually from Microsoft.'\n          Write-WinUtilHost $msg\n          Write-WinUtilLog -Level 'WARN' -Component 'RemoveEdge' -Message $msg\n      } catch {\n          Write-WinUtilLog -Level 'ERROR' -Component 'RemoveEdge' -Message \"Failed to reinstall Edge: $($_.Exception.Message)\"\n          throw\n      }"
     ],
   }
-```
+````

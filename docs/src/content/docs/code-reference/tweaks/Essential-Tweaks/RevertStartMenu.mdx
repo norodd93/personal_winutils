@@ -1,6 +1,6 @@
 ---
 title: "Start Menu Previous Layout - Enable"
-description: "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2. On newer versions of Windows !!THIS TWEAK WILL NOT WORK!!"
+description: "Applies a Windows 11 Start menu layout feature override on builds where supported. Not applicable on Windows 10 or unsupported Windows 11 builds; WinUtil skips it safely on unsupported systems."
 editUrl: false
 ---
 
@@ -8,15 +8,15 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
- "WPFTweaksRevertStartMenu": {
+````json title="config/tweaks.json"
+  "WPFTweaksRevertStartMenu": {
     "Content": "Start Menu Previous Layout - Enable",
-    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2. On newer versions of Windows !!THIS TWEAK WILL NOT WORK!!",
+    "Description": "Applies a Windows 11 Start menu layout feature override on builds where supported. Not applicable on Windows 10 or unsupported Windows 11 builds; WinUtil skips it safely on unsupported systems.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
       {
-        "Path": "HKLM:\\SYSTEM\\ControlSet001\\Control\\FeatureManagement\\Overrides\\8\\3036241548",
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FeatureManagement\\Overrides\\8\\3036241548",
         "Name": "EnabledState",
         "Value": "1",
         "Type": "DWord",
@@ -24,7 +24,7 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
       }
     ],
   }
-```
+````
 
 ## Registry Changes
 

@@ -1,6 +1,6 @@
 ---
 title: "Teredo - Disable"
-description: "Teredo network tunneling is an IPv6 feature that can cause additional latency, but may cause problems with some games."
+description: "Disables Teredo IPv6 tunneling. Mutually exclusive with other IPv6 mode tweaks; undo the active IPv6 mode before applying a different one (WinUtil blocks conflicting apply/undo)."
 editUrl: false
 ---
 
@@ -8,10 +8,10 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksTeredo": {
     "Content": "Teredo - Disable",
-    "Description": "Teredo network tunneling is an IPv6 feature that can cause additional latency, but may cause problems with some games.",
+    "Description": "Disables Teredo IPv6 tunneling. Mutually exclusive with other IPv6 mode tweaks; undo the active IPv6 mode before applying a different one (WinUtil blocks conflicting apply/undo).",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -20,7 +20,7 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
         "Name": "DisabledComponents",
         "Value": "1",
         "Type": "DWord",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
@@ -30,7 +30,7 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
       "netsh interface teredo set state default"
     ],
   }
-```
+````
 
 ## Registry Changes
 

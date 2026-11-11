@@ -8,7 +8,7 @@ editUrl: false
 This page is generated from [`functions/public/Invoke-WPFFixesNTPPool.ps1`](https://github.com/ChrisTitusTech/winutil/blob/main/functions/public/Invoke-WPFFixesNTPPool.ps1). Do not edit this page directly.
 :::
 
-```powershell title="functions/public/Invoke-WPFFixesNTPPool.ps1"
+````powershell title="functions/public/Invoke-WPFFixesNTPPool.ps1"
 function Invoke-WPFFixesNTPPool {
     <#
     .SYNOPSIS
@@ -19,11 +19,27 @@ function Invoke-WPFFixesNTPPool {
         pool.ntp.org for improved time synchronization accuracy and reliability.
     #>
 
-    Start-Service w32time
-    w32tm /config /update /manualpeerlist:"pool.ntp.org,0x8" /syncfromflags:MANUAL
+    try {
+        Write-WinUtilLog -Component "Fixes" -Message "Configuring Windows Time service to use pool.ntp.org."
+        if (Get-Service -Name w32time -ErrorAction SilentlyContinue) {
+            Start-Service w32time -ErrorAction SilentlyContinue
+        }
+        w32tm /config /update /manualpeerlist:"pool.ntp.org,0x8" /syncfromflags:MANUAL 2>&1 | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "w32tm /config failed with exit code $LASTEXITCODE" }
 
-    Restart-Service w32time
-    w32tm /resync
-
+        if (Get-Service -Name w32time -ErrorAction SilentlyContinue) {
+            Restart-Service w32time -ErrorAction Stop
+        }
+        w32tm /resync 2>&1 | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            Write-WinUtilLog -Level "WARN" -Component "Fixes" -Message "w32tm /resync returned exit code $LASTEXITCODE. Time source was configured but immediate resync may require network connectivity."
+            Write-Warning "Time source was configured, but immediate resync did not complete (exit code $LASTEXITCODE)."
+        } else {
+            Write-WinUtilLog -Component "Fixes" -Message "Windows Time service configured and resynced with pool.ntp.org."
+        }
+    } catch {
+        Write-WinUtilLog -Level "ERROR" -Component "Fixes" -Message "Failed to configure NTP pool: $($_.Exception.Message)"
+        throw
+    }
 }
-```
+````

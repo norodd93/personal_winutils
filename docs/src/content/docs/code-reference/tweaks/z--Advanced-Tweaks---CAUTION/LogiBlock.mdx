@@ -8,39 +8,17 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksLogiBlock": {
     "Content": "Logitech Download Assistant Auto-Install - Disable",
     "Description": "Blocks the Logi Download Assistant that Windows Update keeps reinstalling with Logitech device drivers. Logitech hardware keeps working without it.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "
-      Stop-Process -Name \"logi_download_assistant\" -Force -ErrorAction SilentlyContinue
-
-      $ProgramFiles64 = if ($Env:ProgramW6432) { $Env:ProgramW6432 } else { $Env:ProgramFiles }
-      $LogiPath = \"$ProgramFiles64\\LogiDownloadAssistant\"
-
-      if (Test-Path $LogiPath) {
-        Remove-Item $LogiPath\\* -Recurse -Force
-      } else {
-        New-Item -Path $LogiPath -ItemType Directory
-      }
-
-      icacls $LogiPath /deny \"*S-1-1-0:(W)\"
-      if ($LASTEXITCODE -ne 0) { throw \"icacls failed to deny write access on $LogiPath (exit code $LASTEXITCODE)\" }
-      "
+      "      Stop-Process -Name \\\"logi_download_assistant\\\" -Force -ErrorAction SilentlyContinue\n\n      $ProgramFiles64 = if ($Env:ProgramW6432) { $Env:ProgramW6432 } else { $Env:ProgramFiles }\n      $LogiPath = \\\"$ProgramFiles64\\\\LogiDownloadAssistant\\\"\n\n      if (Test-Path $LogiPath) {\n        Remove-Item $LogiPath\\\\* -Recurse -Force\n      } else {\n        New-Item -Path $LogiPath -ItemType Directory\n      }\n\n      icacls $LogiPath /deny \\\"*S-1-1-0:(W)\\\"\n      if ($LASTEXITCODE -ne 0) { throw \\\"icacls failed to deny write access on $LogiPath (exit code $LASTEXITCODE)\\\" }"
     ],
     "UndoScript": [
-      "
-      $ProgramFiles64 = if ($Env:ProgramW6432) { $Env:ProgramW6432 } else { $Env:ProgramFiles }
-      $LogiPath = \"$ProgramFiles64\\LogiDownloadAssistant\"
-
-      if (Test-Path $LogiPath) {
-        icacls $LogiPath /remove:d \"*S-1-1-0\"
-        if ($LASTEXITCODE -ne 0) { throw \"icacls failed to remove the write-deny rule on $LogiPath (exit code $LASTEXITCODE)\" }
-      }
-      "
+      "      $ProgramFiles64 = if ($Env:ProgramW6432) { $Env:ProgramW6432 } else { $Env:ProgramFiles }\n      $LogiPath = \\\"$ProgramFiles64\\\\LogiDownloadAssistant\\\"\n\n      if (Test-Path $LogiPath) {\n        icacls $LogiPath /remove:d \\\"*S-1-1-0\\\"\n        if ($LASTEXITCODE -ne 0) { throw \\\"icacls failed to remove the write-deny rule on $LogiPath (exit code $LASTEXITCODE)\\\" }\n      }"
     ],
   }
-```
+````

@@ -8,7 +8,7 @@ editUrl: false
 This page is generated from [`functions/public/Invoke-WPFOOSU.ps1`](https://github.com/ChrisTitusTech/winutil/blob/main/functions/public/Invoke-WPFOOSU.ps1). Do not edit this page directly.
 :::
 
-```powershell title="functions/public/Invoke-WPFOOSU.ps1"
+````powershell title="functions/public/Invoke-WPFOOSU.ps1"
 function Invoke-WPFOOSU {
     Start-WinUtilJob -Name "OOSU" -Description "Downloading O&O ShutUp10++" -Parameters @{
         DownloadPath = Join-Path $sync.winutildir "ooshutup10.exe"
@@ -34,4 +34,4 @@ function Invoke-WPFOOSU {
         Write-WinUtilLog -Component "OOSU" -Message "O&O ShutUp10++ launched."
     }
 }
-```
+````

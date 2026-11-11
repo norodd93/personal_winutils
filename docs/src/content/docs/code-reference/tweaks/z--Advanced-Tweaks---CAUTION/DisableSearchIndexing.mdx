@@ -1,0 +1,31 @@
+---
+title: "Windows Search Indexing - Disable"
+description: "Stops and disables the Windows Search service (WSearch) to cut background disk activity, mainly useful on mechanical hard drives. Warning: file searches in Explorer and the Start menu become much slower because Windows no longer maintains a search index. Undo restores the service and starts it again."
+editUrl: false
+---
+
+:::note
+This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
+:::
+
+````json title="config/tweaks.json"
+  "WPFTweaksDisableSearchIndexing": {
+    "Content": "Windows Search Indexing - Disable",
+    "Description": "Stops and disables the Windows Search service (WSearch) to cut background disk activity, mainly useful on mechanical hard drives. Warning: file searches in Explorer and the Start menu become much slower because Windows no longer maintains a search index. Undo restores the service and starts it again.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "service": [
+      {
+        "Name": "WSearch",
+        "StartupType": "Disabled",
+        "OriginalType": "Automatic"
+      }
+    ],
+    "InvokeScript": [
+      "      try {\n          $search = Get-Service -Name WSearch -ErrorAction Stop\n          if ($search.StartType -eq 'Disabled' -and $search.Status -ne 'Stopped') {\n              Stop-Service -Name WSearch -Force -ErrorAction Stop\n              Write-WinUtilHost \\\"Windows Search (WSearch) has been stopped.\\\"\n              Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableSearchIndexing\\\" -Message \\\"WSearch service stopped\\\"\n          } elseif ($search.Status -eq 'Stopped') {\n              Write-WinUtilHost \\\"Windows Search (WSearch) is already stopped.\\\"\n              Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableSearchIndexing\\\" -Message \\\"WSearch service is already stopped\\\"\n          } else {\n              Write-WinUtilHost \\\"Windows Search (WSearch) was already disabled.\\\"\n              Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableSearchIndexing\\\" -Message \\\"WSearch service was already disabled\\\"\n          }\n      } catch {\n          Write-WinUtilLog -Level \\\"ERROR\\\" -Component \\\"DisableSearchIndexing\\\" -Message \\\"Failed to stop WSearch service: $($_.Exception.Message)\\\"\n          Write-WinUtilHost \\\"Failed to stop Windows Search service.\\\"\n          throw\n      }"
+    ],
+    "UndoScript": [
+      "      try {\n          $search = Get-Service -Name WSearch -ErrorAction Stop\n          if ($search.StartType -eq 'Automatic' -and $search.Status -ne 'Running') {\n              Start-Service -Name WSearch -ErrorAction Stop\n              Write-WinUtilHost \\\"Windows Search (WSearch) has been started and enabled.\\\"\n              Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableSearchIndexing\\\" -Message \\\"WSearch service started and enabled\\\"\n          } elseif ($search.Status -eq 'Running') {\n              Write-WinUtilHost \\\"Windows Search (WSearch) is already running.\\\"\n              Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableSearchIndexing\\\" -Message \\\"WSearch service is already running\\\"\n          } else {\n              Write-WinUtilHost \\\"Windows Search (WSearch) was not running and will be started.\\\"\n              Start-Service -Name WSearch -ErrorAction Stop\n              Write-WinUtilHost \\\"Windows Search (WSearch) has been started.\\\"\n              Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableSearchIndexing\\\" -Message \\\"WSearch service started\\\"\n          }\n      } catch {\n          Write-WinUtilLog -Level \\\"ERROR\\\" -Component \\\"DisableSearchIndexing\\\" -Message \\\"Failed to start WSearch service: $($_.Exception.Message)\\\"\n          Write-WinUtilHost \\\"Failed to start Windows Search service.\\\"\n          throw\n      }"
+    ],
+  }
+````

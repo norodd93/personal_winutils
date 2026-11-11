@@ -8,7 +8,7 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksRestorePoint": {
     "Content": "Restore Point - Create",
     "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications.",
@@ -25,17 +25,10 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
       }
     ],
     "InvokeScript": [
-      "
-      if (-not (Get-ComputerRestorePoint)) {
-          Enable-ComputerRestore -Drive $Env:SystemDrive
-      }
-
-      Checkpoint-Computer -Description \"System Restore Point created by WinUtil\" -RestorePointType MODIFY_SETTINGS
-      Write-Host \"System Restore Point Created Successfully\" -ForegroundColor Green
-      "
+      "      if (-not (Get-ComputerRestorePoint)) {\n          Enable-ComputerRestore -Drive $Env:SystemDrive\n      }\n\n      Checkpoint-Computer -Description \\\"System Restore Point created by WinUtil\\\" -RestorePointType MODIFY_SETTINGS\n      Write-Host \\\"System Restore Point Created Successfully\\\" -ForegroundColor Green"
     ],
   }
-```
+````
 
 ## Registry Changes
 

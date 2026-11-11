@@ -1,6 +1,6 @@
 ---
 title: "Widgets - Remove"
-description: "Removes the annoying widgets in the bottom left of the Taskbar."
+description: "Removes Windows 11 Widgets/Web Experience components when present. On Windows 10 these components are typically not installed; the tweak skips missing items safely."
 editUrl: false
 ---
 
@@ -8,23 +8,14 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksWidget": {
     "Content": "Widgets - Remove",
-    "Description": "Removes the annoying widgets in the bottom left of the Taskbar.",
+    "Description": "Removes Windows 11 Widgets/Web Experience components when present. On Windows 10 these components are typically not installed; the tweak skips missing items safely.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "
-      # Sometimes if you dont stop the Widgets process the removal may fail
-
-      Get-Process *Widget* | Stop-Process
-      Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers
-      Get-AppxPackage MicrosoftWindows.Client.WebExperience -AllUsers | Remove-AppxPackage -AllUsers
-
-      Invoke-WinUtilExplorerUpdate -action \"restart\"
-      Write-Host \"Removed widgets\"
-      "
+      "      # Widgets/News & Interests components differ by Windows version (primarily Windows 11).\n      try { Get-Process *Widget* -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue } catch {}\n      $widgetPackages = @(\n        'Microsoft.WidgetsPlatformRuntime',\n        'MicrosoftWindows.Client.WebExperience'\n      )\n      $removed = $false\n      foreach ($pkg in $widgetPackages) {\n        $installed = Get-AppxPackage -Name $pkg -AllUsers -ErrorAction SilentlyContinue\n        if ($installed) {\n          try {\n            $installed | Remove-AppxPackage -AllUsers -ErrorAction Stop\n            Write-WinUtilLog -Level 'INFO' -Component 'Widgets' -Message \"Removed AppX package: $pkg\"\n            $removed = $true\n          } catch {\n            Write-WinUtilLog -Level 'WARN' -Component 'Widgets' -Message \"Unable to remove AppX package $pkg: $($_.Exception.Message)\"\n          }\n        } else {\n          Write-WinUtilLog -Level 'INFO' -Component 'Widgets' -Message \"AppX package not present: $pkg\"\n        }\n      }\n      try { Invoke-WinUtilExplorerUpdate -action \"restart\" } catch {}\n      if ($removed) {\n        Write-Host \"Removed widgets components where present.\"\n      } else {\n        Write-Host \"No removable widget components were found on this system (this is expected on many Windows 10 installations).\"\n      }"
     ],
   }
-```
+````

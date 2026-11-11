@@ -1,6 +1,6 @@
 ---
 title: "Disk Cleanup - Run"
-description: "Runs Disk Cleanup on Drive C: and removes old Windows Updates."
+description: "Runs Disk Cleanup on drive C: (/VERYLOWDISK) and DISM component store cleanup (/StartComponentCleanup /ResetBase). High-risk/irreversible: /ResetBase prevents uninstalling existing Windows updates and may take a long time or fail on some Windows 10/11 systems. No automatic undo."
 editUrl: false
 ---
 
@@ -8,17 +8,14 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksDiskCleanup": {
     "Content": "Disk Cleanup - Run",
-    "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
+    "Description": "Runs Disk Cleanup on drive C: (/VERYLOWDISK) and DISM component store cleanup (/StartComponentCleanup /ResetBase). High-risk/irreversible: /ResetBase prevents uninstalling existing Windows updates and may take a long time or fail on some Windows 10/11 systems. No automatic undo.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "
-      cleanmgr.exe /d C: /VERYLOWDISK
-      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
-      "
+      "      cleanmgr.exe /d C: /VERYLOWDISK\n      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase"
     ],
   }
-```
+````

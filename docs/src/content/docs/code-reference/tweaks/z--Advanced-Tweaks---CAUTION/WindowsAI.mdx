@@ -1,6 +1,6 @@
 ---
 title: "Windows AI - Disable And Remove"
-description: "Removes and disables all AI features/packages"
+description: "Removes/disables Windows AI components (Copilot, Recall-related features, etc.) on supported Windows 11 builds. On Windows 10 or unsupported builds, WinUtil skips inapplicable package/feature removal steps and applies supported policy changes best-effort."
 editUrl: false
 ---
 
@@ -8,10 +8,10 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksWindowsAI": {
     "Content": "Windows AI - Disable And Remove",
-    "Description": "Removes and disables all AI features/packages",
+    "Description": "Removes/disables Windows AI components (Copilot, Recall-related features, etc.) on supported Windows 11 builds. On Windows 10 or unsupported builds, WinUtil skips inapplicable package/feature removal steps and applies supported policy changes best-effort.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -31,40 +31,10 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
       }
     ],
     "InvokeScript": [
-      "
-      $Appx = (Get-AppxPackage MicrosoftWindows.Client.CoreAI).PackageFullName
-      $Sid = (Get-LocalUser $Env:UserName).Sid.Value
-
-      New-Item \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$Sid\\$Appx\" -Force
-
-      Get-AppxPackage -AllUsers \"*Copilot*\" | Remove-AppxPackage -AllUsers
-      winget uninstall -e --name \"Copilot\" --silent --force --accept-source-agreements 2>$null
-      Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -AllUsers
-
-      if ($Appx) {
-          Remove-AppxPackage $Appx
-      }
-
-      # WSAIFabricSvc only exists on some Windows 11 builds; without the guard a
-      # missing service aborts the rest of this script block and Recall stays enabled
-      if (Get-Service -Name WSAIFabricSvc -ErrorAction SilentlyContinue) {
-          Set-Service -Name WSAIFabricSvc -StartupType Disabled
-      }
-      # Store/MSIX PowerShell 7 can hang or fail COM activation in DISM.
-      $RecallCommand = {
-          Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart -ErrorAction Stop | Out-Null
-      }
-      $RecallOutput = powershell.exe -NoProfile -NonInteractive -Command $RecallCommand 2>&1
-      if ($LASTEXITCODE -ne 0) {
-          throw \"Failed to disable Recall (exit code $LASTEXITCODE): $(($RecallOutput | Out-String).Trim())\"
-      }
-      $RecallOutput | ForEach-Object { Write-Host $_ }
-
-      Write-Host \"Windows AI Disabled\"
-      "
+      "      $osBuild = 0\n      try { $osBuild = [int](Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).BuildNumber } catch { try { $osBuild = [int][Environment]::OSVersion.Version.Build } catch { $osBuild = 0 } }\n      if ($osBuild -gt 0 -and $osBuild -lt 22000) {\n          Write-WinUtilHost \"Windows AI removal components are not applicable on Windows 10 (build $osBuild). Skipping AI package/feature removal steps.\"\n          Write-WinUtilLog -Level 'WARN' -Component 'WindowsAI' -Message \"Skipped Windows AI removal steps on Windows 10 build $osBuild.\"\n          return\n      }\n\n      try {\n        $sid = $null\n        try { $sid = (Get-LocalUser $Env:UserName -ErrorAction SilentlyContinue).Sid.Value } catch { $sid = $null }\n        $coreAI = Get-AppxPackage -AllUsers -Name MicrosoftWindows.Client.CoreAI -ErrorAction SilentlyContinue | Select-Object -First 1\n        if ($coreAI -and $sid) {\n          $eolPath = \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\EndOfLife\\$sid\\$($coreAI.PackageFullName)\"\n          try { New-Item -Path $eolPath -Force -ErrorAction SilentlyContinue | Out-Null } catch {}\n        }\n\n        $copilotPkgs = Get-AppxPackage -AllUsers -Name '*Copilot*' -ErrorAction SilentlyContinue\n        foreach ($pkg in @($copilotPkgs)) {\n          try { Remove-AppxPackage -Package $pkg.PackageFullName -AllUsers -ErrorAction Stop; Write-WinUtilLog -Level 'INFO' -Component 'WindowsAI' -Message \"Removed AppX package: $($pkg.Name)\" } catch { Write-WinUtilLog -Level 'WARN' -Component 'WindowsAI' -Message \"Unable to remove AppX package $($pkg.Name): $($_.Exception.Message)\" }\n        }\n\n        if (Get-Command winget -ErrorAction SilentlyContinue) {\n          try { Start-Process -FilePath 'winget' -ArgumentList 'uninstall -e --name \"Copilot\" --silent --force --accept-source-agreements' -Wait -NoNewWindow -ErrorAction SilentlyContinue | Out-Null } catch {}\n        }\n\n        $officeHub = Get-AppxPackage -AllUsers -Name Microsoft.MicrosoftOfficeHub -ErrorAction SilentlyContinue\n        foreach ($pkg in @($officeHub)) {\n          try { Remove-AppxPackage -Package $pkg.PackageFullName -AllUsers -ErrorAction Stop; Write-WinUtilLog -Level 'INFO' -Component 'WindowsAI' -Message \"Removed AppX package: $($pkg.Name)\" } catch { Write-WinUtilLog -Level 'WARN' -Component 'WindowsAI' -Message \"Unable to remove AppX package $($pkg.Name): $($_.Exception.Message)\" }\n        }\n\n        if ($coreAI) {\n          try { Remove-AppxPackage -Package $coreAI.PackageFullName -AllUsers -ErrorAction Stop; Write-WinUtilLog -Level 'INFO' -Component 'WindowsAI' -Message \"Removed AppX package: MicrosoftWindows.Client.CoreAI\" } catch { Write-WinUtilLog -Level 'WARN' -Component 'WindowsAI' -Message \"Unable to remove MicrosoftWindows.Client.CoreAI: $($_.Exception.Message)\" }\n        }\n\n        if (Get-Service -Name WSAIFabricSvc -ErrorAction SilentlyContinue) {\n          try { Set-Service -Name WSAIFabricSvc -StartupType Disabled -ErrorAction Stop } catch { Write-WinUtilLog -Level 'WARN' -Component 'WindowsAI' -Message \"Unable to disable WSAIFabricSvc: $($_.Exception.Message)\" }\n        }\n\n        $recallOutput = powershell.exe -NoProfile -NonInteractive -Command {\n          try {\n            $f = Get-WindowsOptionalFeature -Online -FeatureName Recall -ErrorAction SilentlyContinue\n            if ($null -eq $f) { Write-Output 'Recall feature not present'; exit 0 }\n            Disable-WindowsOptionalFeature -FeatureName Recall -Online -NoRestart -ErrorAction Stop | Out-Null\n            Write-Output 'Recall disabled'\n            exit 0\n          } catch {\n            Write-Output $_.Exception.Message\n            exit 1\n          }\n        } 2>&1\n        if ($LASTEXITCODE -ne 0) {\n          Write-WinUtilLog -Level 'WARN' -Component 'WindowsAI' -Message \"Recall disable step did not complete: $(($recallOutput | Out-String).Trim())\"\n          Write-WinUtilHost \"Recall feature could not be disabled on this system/build; continuing with remaining Windows AI policy changes.\"\n        } else {\n          $recallOutput | ForEach-Object { if ($_ -and (\"$_\").Trim()) { Write-WinUtilHost \"$_\" } }\n        }\n\n        Write-Host \"Windows AI disable/remove steps completed where applicable.\"\n      } catch {\n        Write-WinUtilLog -Level 'ERROR' -Component 'WindowsAI' -Message \"Windows AI tweak encountered an error: $($_.Exception.Message)\"\n        throw\n      }"
     ],
   }
-```
+````
 
 ## Registry Changes
 
