@@ -11,6 +11,10 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 
 WinUtil includes a built-in **Win11 Creator** tool that lets you take an official Windows 11 ISO and produce a customized, debloated version. The resulting image can remove telemetry, bypass hardware requirement checks, and enable local account setup out of the box. You can export the result as a new ISO file or write it directly to a USB drive.
 
+:::note
+**Windows 11 only:** Win11 Creator is available on Windows 11 hosts. On Windows 10, WinUtil hides/disables this tool and shows an explicit message because the workflow and output target Windows 11 media.
+:::
+
 ![Win11 Creator tab in WinUtil](../../../assets/screenshots/win11creator-tab-new.png)
 
 :::caution

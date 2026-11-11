@@ -24,6 +24,21 @@ function Invoke-WPFTab {
 
     $tabNumber = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
 
+    # Win11 Creator is only supported on Windows 11.
+    if ($ClickedTab -eq "WPFTab4BT") {
+        $osInfo = if (Get-Command Get-WinUtilOSInfo -ErrorAction SilentlyContinue) { Get-WinUtilOSInfo } else { $null }
+        if ($osInfo -and -not $osInfo.IsWindows11) {
+            $msg = "Win11 Creator is available on Windows 11 only. This system was detected as Windows build $($osInfo.BuildNumber); the tool is not available on Windows 10."
+            Write-WinUtilLog -Level "WARN" -Component "UI" -Message $msg
+            if ($sync.Form -and $sync.Form.Dispatcher) {
+                Invoke-WPFUIThread -ScriptBlock { Show-WinUtilMessage -Message $msg -Title "Win11 Creator unavailable" -Button "OK" -Icon "Warning" | Out-Null }
+            } else {
+                Write-Warning $msg
+            }
+            return
+        }
+    }
+
     Measure-WinUtilStep -Scope "Tab" -Name "$ClickedTab select" -ScriptBlock {
         $filter = Get-WinUtilVariables -Type ToggleButton | Where-Object {$psitem -like "WPFTab?BT"}
         $sync.WPFTabNav.Items[$tabNumber].IsSelected = $true

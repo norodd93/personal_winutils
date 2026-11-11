@@ -26,11 +26,18 @@ function Invoke-WPFInstall {
         param($PackagesToInstall, $ManagerPreference)
 
         $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToInstall -Preference $ManagerPreference
-        $packagesWinget = $packagesSorted['Winget']
-        $packagesChoco = $packagesSorted['Choco']
-        $totalPackages = @($packagesWinget).Count + @($packagesChoco).Count
+        $packagesWinget = @($packagesSorted['Winget'])
+        $packagesChoco = @($packagesSorted['Choco'])
+        $totalPackages = $packagesWinget.Count + $packagesChoco.Count
         $completedPackages = 0
-        Write-WinUtilLog -Component "Install" -Message "Install package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count)"
+        Write-WinUtilLog -Component "Install" -Message "Install package manager split: winget=$($packagesWinget.Count), choco=$($packagesChoco.Count)"
+
+        if ($totalPackages -eq 0) {
+            $msg = "No installable package IDs were resolved for the selected application(s). Check package manager availability and package IDs for this Windows version."
+            Write-Warning $msg
+            Write-WinUtilLog -Level "WARN" -Component "Install" -Message $msg
+            return
+        }
 
         $results = @()
 
