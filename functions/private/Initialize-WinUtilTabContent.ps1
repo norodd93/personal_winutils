@@ -41,11 +41,6 @@ function Initialize-WinUtilTabContent {
                 Invoke-WPFUIElements -configVariable $sync.configs.appx -targetGridName "appxpanel" -columncount 2 -Yield:$Yield
             }
             "Win11ISO" {
-                $osInfo = if (Get-Command Get-WinUtilOSInfo -ErrorAction SilentlyContinue) { Get-WinUtilOSInfo } else { $null }
-                if ($osInfo -and -not $osInfo.IsWindows11) {
-                    Write-WinUtilLog -Level "WARN" -Component "UI" -Message "Skipping Win11 Creator initialization on Windows build $($osInfo.BuildNumber)."
-                    return
-                }
                 if (Test-WinUtilUIAlive) {
                     $sync.Form.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [action]{ Invoke-WinUtilISOCheckExistingWork }) | Out-Null
                 }

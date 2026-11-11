@@ -13,12 +13,12 @@ WinUtil helps you install apps, apply system tweaks, run common fixes, and manag
 
 Before running WinUtil, ensure your system meets these requirements:
 
-:::note
-WinUtil targets **Windows 11** and provides **best-effort support for Windows 10** where possible. Windows 10 reached end of support on **October 14, 2025**. Items that are not applicable on your Windows version, edition, or build are skipped, hidden/disabled, or reported with an explicit message.
+:::caution
+Windows 10 is not supported by WinUtil. Windows 10 reached the end of support on **October 14, 2025**.
 :::
 
-- **Operating system**: Windows 11 (primary) or Windows 10 (best-effort, with limitations)
-- **PowerShell**: Version 5.1 or later
+- **Operating system**: Windows 11
+- **PowerShell**: Version 5.1 or later (included by default in Windows 11)
 - **Administrator access**: Required for system-level changes
 - **Internet connection**: Required for downloading applications and updates
 - **.NET Framework**: Version 4.5 or later (usually pre-installed)
@@ -91,7 +91,7 @@ WinUtil opens with a clean, tabbed interface:
 - **Install**: Browse and install applications
 - **Tweaks**: Apply system optimizations and customizations
 - **Config**: Access system tools and utilities
-- **Win11 Creator** (Windows 11 only): Build a customized Windows 11 ISO from an official Microsoft image. This tab/tool is hidden or unavailable on Windows 10 with an explicit message.
+- **Win11 Creator**: Build a customized Windows 11 ISO from an official Microsoft image
 
 **Running more than one action**: if you start an install, tweak or fix while another is running, it waits its turn instead of being refused. A clock button appears in the top bar with the number waiting; open it to see what is running, move waiting items up or down, or cancel them. Consecutive identical requests are queued once; repeating an action after a different request keeps your chosen order. Closing WinUtil discards anything still waiting.
 

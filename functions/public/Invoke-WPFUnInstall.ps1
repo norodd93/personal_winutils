@@ -36,18 +36,11 @@ function Invoke-WPFUnInstall {
         param($PackagesToUninstall, $ManagerPreference)
 
         $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToUninstall -Preference $ManagerPreference -Action Uninstall
-        $packagesWinget = @($packagesSorted['Winget'])
-        $packagesChoco = @($packagesSorted['Choco'])
-        $totalPackages = $packagesWinget.Count + $packagesChoco.Count
+        $packagesWinget = $packagesSorted['Winget']
+        $packagesChoco = $packagesSorted['Choco']
+        $totalPackages = @($packagesWinget).Count + @($packagesChoco).Count
         $completedPackages = 0
-        Write-WinUtilLog -Component "Uninstall" -Message "Uninstall package manager split: winget=$($packagesWinget.Count), choco=$($packagesChoco.Count)"
-
-        if ($totalPackages -eq 0) {
-            $msg = "No uninstallable package IDs were resolved for the selected application(s)."
-            Write-Warning $msg
-            Write-WinUtilLog -Level "WARN" -Component "Uninstall" -Message $msg
-            return
-        }
+        Write-WinUtilLog -Component "Uninstall" -Message "Uninstall package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count)"
 
         if ($packagesWinget -contains "Microsoft.Edge") {
             New-Item -Path "$Env:SystemRoot\SystemApps\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\MicrosoftEdge.exe" -Force | Out-Null

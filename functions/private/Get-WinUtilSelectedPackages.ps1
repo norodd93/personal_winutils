@@ -49,35 +49,16 @@ function Get-WinUtilSelectedPackages {
     }
 
     foreach ($package in $PackageList) {
-        $wingetId = [string]$package.winget
-        $chocoId = [string]$package.choco
-        $content = if ($package.PSObject.Properties.Name -contains "content" -and -not [string]::IsNullOrWhiteSpace([string]$package.content)) { [string]$package.content } else { $wingetId }
-
         switch ($Preference) {
             "Choco" {
-                if ([string]::IsNullOrWhiteSpace($chocoId) -or $chocoId -eq "na") {
-                    if ([string]::IsNullOrWhiteSpace($wingetId) -or $wingetId -eq "na") {
-                        Write-Warning "No package ID available for '$content'; skipping."
-                        Write-WinUtilLog -Level "WARN" -Component "Packages" -Message "No package ID available for '$content'; skipping $Action."
-                    } else {
-                        Add-PackageId -Target $packagesWinget -PackageId $wingetId
-                    }
+                if ([string]::IsNullOrWhiteSpace([string]$package.choco) -or $package.choco -eq "na") {
+                    Add-PackageId -Target $packagesWinget -PackageId $package.winget
                 } else {
-                    Add-PackageId -Target $packagesChoco -PackageId $chocoId
+                    Add-PackageId -Target $packagesChoco -PackageId $package.choco
                 }
             }
             "Winget" {
-                if ([string]::IsNullOrWhiteSpace($wingetId) -or $wingetId -eq "na") {
-                    if ([string]::IsNullOrWhiteSpace($chocoId) -or $chocoId -eq "na") {
-                        Write-Warning "No package ID available for '$content'; skipping."
-                        Write-WinUtilLog -Level "WARN" -Component "Packages" -Message "No package ID available for '$content'; skipping $Action."
-                    } else {
-                        Write-WinUtilLog -Level "WARN" -Component "Packages" -Message "Winget ID unavailable for '$content'; falling back to Chocolatey."
-                        Add-PackageId -Target $packagesChoco -PackageId $chocoId
-                    }
-                } else {
-                    Add-PackageId -Target $packagesWinget -PackageId $wingetId
-                }
+                Add-PackageId -Target $packagesWinget -PackageId $package.winget
             }
         }
     }

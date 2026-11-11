@@ -31,46 +31,6 @@ function Invoke-WinUtilTweaks {
     # runspace cannot be charged to a toggle flipped on the UI thread
     $errorsBefore = [int]$global:WinUtilJobErrorCount
 
-    # Windows 10 best-effort support: skip tweaks that are not applicable.
-    $osInfo = if (Get-Command Get-WinUtilOSInfo -ErrorAction SilentlyContinue) { Get-WinUtilOSInfo } else { $null }
-    $isWin10 = $osInfo -and $osInfo.IsWindows10
-    if ($isWin10) {
-        # These rely on Windows 11-only components/features and can fail or have no safe equivalent.
-        $win11OnlyTweaks = @("WPFTweaksWindowsAI", "WPFTweaksRevertStartMenu")
-        if ($win11OnlyTweaks -contains $CheckBox) {
-            $msg = "Tweak $CheckBox is not applicable on Windows 10 (build $($osInfo.BuildNumber)); skipping."
-            Write-Warning $msg
-            Write-WinUtilLog -Level "WARN" -Component "Tweaks" -Message $msg
-            return
-        }
-    }
-
-    # Prevent conflicting IPv6 mode tweaks from clobbering each other.
-    $ipv6ModeTweaks = @{
-        "WPFTweaksIPv46" = "32"
-        "WPFTweaksTeredo" = "1"
-        "WPFTweaksDisableIPv6" = "255"
-    }
-    if ($ipv6ModeTweaks.ContainsKey($CheckBox)) {
-        $ipv6Path = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters"
-        $currentIPv6 = $null
-        try { $currentIPv6 = (Get-ItemProperty -Path $ipv6Path -Name "DisabledComponents" -ErrorAction Stop).DisabledComponents } catch { $currentIPv6 = $null }
-        $targetValue = $ipv6ModeTweaks[$CheckBox]
-        $otherActive = @($ipv6ModeTweaks.Keys | Where-Object { $_ -ne $CheckBox -and [string]$currentIPv6 -eq [string]$ipv6ModeTweaks[$_] })
-        if (-not $undo -and $otherActive.Count -gt 0 -and [string]$currentIPv6 -ne [string]$targetValue) {
-            $msg = "Cannot apply $CheckBox because another IPv6 mode tweak appears active ($($otherActive -join ', '), DisabledComponents=$currentIPv6). Undo the conflicting tweak first."
-            Write-Warning $msg
-            Write-WinUtilLog -Level "WARN" -Component "Tweaks" -Message $msg
-            throw $msg
-        }
-        if ($undo -and $null -ne $currentIPv6 -and [string]$currentIPv6 -ne [string]$targetValue) {
-            $msg = "Skipping undo for $CheckBox because DisabledComponents is '$currentIPv6' (expected '$targetValue'); another IPv6 configuration may be active."
-            Write-Warning $msg
-            Write-WinUtilLog -Level "WARN" -Component "Tweaks" -Message $msg
-            return
-        }
-    }
-
     if ($undo) {
         $Values = @{
             Registry = "OriginalValue"
