@@ -1,6 +1,6 @@
 ---
 title: "Microsoft Edge - Remove"
-description: "High-risk/advanced (by design): attempts to uninstall Microsoft Edge using a legacy system-app uninstall method where supported. On Windows 10/11 builds where required Edge components or installers are not present, the tweak skips safely with an explicit message. Undo attempts reinstall via winget/choco when available; manual reinstall may be required."
+description: "High-risk/advanced (by design): attempts to uninstall Microsoft Edge using a legacy system-app uninstall method only where supported. On Windows 10/11 builds where required components/installers are missing or removal is unsupported, it skips safely with an explicit message. Undo attempts reinstall via winget/choco when available; manual reinstall may be required."
 editUrl: false
 ---
 
@@ -11,7 +11,7 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
 ````json title="config/tweaks.json"
   "WPFTweaksRemoveEdge": {
     "Content": "Microsoft Edge - Remove",
-    "Description": "High-risk/advanced (by design): attempts to uninstall Microsoft Edge using a legacy system-app uninstall method where supported. On Windows 10/11 builds where required Edge components or installers are not present, the tweak skips safely with an explicit message. Undo attempts reinstall via winget/choco when available; manual reinstall may be required.",
+    "Description": "High-risk/advanced (by design): attempts to uninstall Microsoft Edge using a legacy system-app uninstall method only where supported. On Windows 10/11 builds where required components/installers are missing or removal is unsupported, it skips safely with an explicit message. Undo attempts reinstall via winget/choco when available; manual reinstall may be required.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [

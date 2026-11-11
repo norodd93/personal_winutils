@@ -1,6 +1,6 @@
 ---
 title: "Adobe URL Block List - Enable"
-description: "High-risk network/hosts modification (by design): downloads a third-party Adobe URL block list at apply time and appends it to the hosts file between WinUtil markers. Requires network access and trusts the remote list source; undo removes the marked WinUtil-added section. Review suitability for your environment before applying."
+description: "High-risk network/hosts modification (by design): downloads a third-party Adobe URL block list at apply time and appends it to the hosts file between WinUtil markers. Requires network access and trusts the remote list source; may affect Adobe/licensing/network behavior. Undo removes the marked WinUtil-added section. Review suitability before applying."
 editUrl: false
 ---
 
@@ -11,7 +11,7 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
 ````json title="config/tweaks.json"
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe URL Block List - Enable",
-    "Description": "High-risk network/hosts modification (by design): downloads a third-party Adobe URL block list at apply time and appends it to the hosts file between WinUtil markers. Requires network access and trusts the remote list source; undo removes the marked WinUtil-added section. Review suitability for your environment before applying.",
+    "Description": "High-risk network/hosts modification (by design): downloads a third-party Adobe URL block list at apply time and appends it to the hosts file between WinUtil markers. Requires network access and trusts the remote list source; may affect Adobe/licensing/network behavior. Undo removes the marked WinUtil-added section. Review suitability before applying.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [

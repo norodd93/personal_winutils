@@ -1,6 +1,6 @@
 ---
 title: "Microsoft OneDrive - Remove"
-description: "High-risk/advanced (by design): removes Microsoft OneDrive. Best-effort on Windows 10/11; if OneDrive components or folder state differ, the tweak skips unsafe steps and reports status. Undo attempts reinstall via winget/choco when available and may require manual reinstall on some systems."
+description: "High-risk/advanced (by design): removes Microsoft OneDrive best-effort on Windows 10/11. Protects/restores folder ACL during uninstall, skips unsafe cleanup when state differs, and reports status. Undo attempts reinstall via winget/choco when available and may require manual reinstall/sign-in."
 editUrl: false
 ---
 
@@ -11,7 +11,7 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
 ````json title="config/tweaks.json"
   "WPFTweaksRemoveOneDrive": {
     "Content": "Microsoft OneDrive - Remove",
-    "Description": "High-risk/advanced (by design): removes Microsoft OneDrive. Best-effort on Windows 10/11; if OneDrive components or folder state differ, the tweak skips unsafe steps and reports status. Undo attempts reinstall via winget/choco when available and may require manual reinstall on some systems.",
+    "Description": "High-risk/advanced (by design): removes Microsoft OneDrive best-effort on Windows 10/11. Protects/restores folder ACL during uninstall, skips unsafe cleanup when state differs, and reports status. Undo attempts reinstall via winget/choco when available and may require manual reinstall/sign-in.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [

@@ -577,7 +577,7 @@
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Microsoft Edge - Remove",
-    "Description": "High-risk/advanced (by design): attempts to uninstall Microsoft Edge using a legacy system-app uninstall method where supported. On Windows 10/11 builds where required Edge components or installers are not present, the tweak skips safely with an explicit message. Undo attempts reinstall via winget/choco when available; manual reinstall may be required.",
+    "Description": "High-risk/advanced (by design): attempts to uninstall Microsoft Edge using a legacy system-app uninstall method only where supported. On Windows 10/11 builds where required components/installers are missing or removal is unsupported, it skips safely with an explicit message. Undo attempts reinstall via winget/choco when available; manual reinstall may be required.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -619,7 +619,7 @@
   },
   "WPFTweaksRemoveOneDrive": {
     "Content": "Microsoft OneDrive - Remove",
-    "Description": "High-risk/advanced (by design): removes Microsoft OneDrive. Best-effort on Windows 10/11; if OneDrive components or folder state differ, the tweak skips unsafe steps and reports status. Undo attempts reinstall via winget/choco when available and may require manual reinstall on some systems.",
+    "Description": "High-risk/advanced (by design): removes Microsoft OneDrive best-effort on Windows 10/11. Protects/restores folder ACL during uninstall, skips unsafe cleanup when state differs, and reports status. Undo attempts reinstall via winget/choco when available and may require manual reinstall/sign-in.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -935,7 +935,7 @@
   },
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe URL Block List - Enable",
-    "Description": "High-risk network/hosts modification (by design): downloads a third-party Adobe URL block list at apply time and appends it to the hosts file between WinUtil markers. Requires network access and trusts the remote list source; undo removes the marked WinUtil-added section. Review suitability for your environment before applying.",
+    "Description": "High-risk network/hosts modification (by design): downloads a third-party Adobe URL block list at apply time and appends it to the hosts file between WinUtil markers. Requires network access and trusts the remote list source; may affect Adobe/licensing/network behavior. Undo removes the marked WinUtil-added section. Review suitability before applying.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
@@ -961,11 +961,11 @@
   },
   "WPFTweaksDiskCleanup": {
     "Content": "Disk Cleanup - Run",
-    "Description": "Runs Disk Cleanup on drive C: (/VERYLOWDISK) and DISM component store cleanup (/StartComponentCleanup /ResetBase). High-risk/irreversible: /ResetBase prevents uninstalling existing Windows updates and may take a long time or fail on some Windows 10/11 systems. No automatic undo.",
+    "Description": "Runs Disk Cleanup on drive C: (/VERYLOWDISK) and DISM component store cleanup (/StartComponentCleanup) in a safer mode. Does not run irreversible /ResetBase automatically (which would prevent uninstalling existing Windows updates); logs guidance if you choose to run /ResetBase manually. May take time and behavior can vary by Windows 10/11 version.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "      cleanmgr.exe /d C: /VERYLOWDISK\n      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase"
+      "      Write-WinUtilHost 'Running Disk Cleanup and Windows component store cleanup (safe mode).'\n      Write-WinUtilLog -Level 'INFO' -Component 'DiskCleanup' -Message 'Starting Disk Cleanup (cleanmgr /VERYLOWDISK on C:) and DISM /StartComponentCleanup without /ResetBase.'\n\n      $cleanmgr = Start-Process -FilePath 'cleanmgr.exe' -ArgumentList '/d','C:','/VERYLOWDISK' -Wait -PassThru -NoNewWindow -ErrorAction SilentlyContinue\n      if (-not $cleanmgr) {\n        Write-WinUtilLog -Level 'WARN' -Component 'DiskCleanup' -Message 'cleanmgr.exe could not be started; skipping Disk Cleanup UI-driven step.'\n        Write-WinUtilHost 'cleanmgr.exe could not be started; skipping Disk Cleanup step.'\n      } elseif ($cleanmgr.ExitCode -ne 0) {\n        Write-WinUtilLog -Level 'WARN' -Component 'DiskCleanup' -Message \"cleanmgr.exe exited with code $($cleanmgr.ExitCode).\"\n      } else {\n        Write-WinUtilLog -Level 'INFO' -Component 'DiskCleanup' -Message 'cleanmgr.exe completed.'\n      }\n\n      $dism = Start-Process -FilePath 'dism.exe' -ArgumentList '/online','/Cleanup-Image','/StartComponentCleanup' -Wait -PassThru -NoNewWindow -ErrorAction SilentlyContinue\n      if (-not $dism) {\n        $msg = 'Failed to start dism.exe for component store cleanup.'\n        Write-WinUtilLog -Level 'ERROR' -Component 'DiskCleanup' -Message $msg\n        throw $msg\n      }\n      if ($dism.ExitCode -ne 0) {\n        $msg = \"DISM component cleanup failed with exit code $($dism.ExitCode). This can vary by Windows 10/11 version/state; no irreversible /ResetBase operation was performed.\"\n        Write-WinUtilLog -Level 'ERROR' -Component 'DiskCleanup' -Message $msg\n        throw $msg\n      }\n\n      $note = 'Skipped DISM /ResetBase by design: it is irreversible and prevents uninstalling existing Windows updates. Run \"DISM /Online /Cleanup-Image /StartComponentCleanup /ResetBase\" manually only if you accept that risk.'\n      Write-WinUtilHost 'Component store cleanup completed (StartComponentCleanup).'\n      Write-WinUtilHost $note\n      Write-WinUtilLog -Level 'INFO' -Component 'DiskCleanup' -Message 'DISM StartComponentCleanup completed.'\n      Write-WinUtilLog -Level 'INFO' -Component 'DiskCleanup' -Message $note"
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/diskcleanup"
   },
