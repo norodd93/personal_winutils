@@ -6,7 +6,7 @@ Project contract for WinUtil — what the project is, how it's built, and how it
 
 ## Project Context
 
-WinUtil is a Windows PowerShell utility with a WPF interface. The repository is maintained as modular source, but the distributed artifact is one compiled PowerShell script.
+WinUtil is a Windows PowerShell utility with a WPF interface. The repository is maintained as modular source, but the distributed artifact is one compiled PowerShell script. It primarily targets Windows 11 and provides best-effort support for Windows 10 where possible (Windows 10 reached end of support on October 14, 2025): features/tweaks/tools that are not applicable to the detected Windows version, edition, or build are skipped, hidden/disabled, or reported with explicit messages rather than failing hard. Some capabilities are Windows 11-only (for example, Win11 Creator and certain Windows 11-specific tweaks/features), and upstream package availability on Windows 10 depends on publishers/package managers.
 
 ### Stack
 
@@ -67,6 +67,7 @@ Because the final script is concatenated, code cannot rely on runtime module imp
 ## Runtime Model
 
 - WinUtil runs in PowerShell on Windows and uses WPF for the UI.
+- Primary target is Windows 11 with best-effort Windows 10 support: runtime/UI paths detect OS/build where needed (e.g. `Get-WinUtilOSInfo`) to gate Win11-only workflows, skip inapplicable tweaks/features, and emit explicit warnings/logs/messages instead of hard failures when behavior is unavailable or differs.
 - Shared mutable state is stored in `$sync`, including configs, UI element references, runspace state, selections, and progress.
 - Long-running operations use runspaces or existing async patterns so the UI remains responsive.
 - User actions that opt into the job queue run one at a time with their selected inputs. Queued work can be reordered or cancelled, pauses during close confirmation, and is discarded when the window closes. ISO and USB jobs still refuse to queue.
