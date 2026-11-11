@@ -60,22 +60,22 @@
   },
   "WPFTweaksWidget": {
     "Content": "Widgets - Remove",
-    "Description": "Removes the annoying widgets in the bottom left of the Taskbar.",
+    "Description": "Removes Windows 11 Widgets/Web Experience components when present. On Windows 10 these components are typically not installed; the tweak skips missing items safely.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "\n      # Sometimes if you dont stop the Widgets process the removal may fail\n\n      Get-Process *Widget* | Stop-Process\n      Get-AppxPackage Microsoft.WidgetsPlatformRuntime -AllUsers | Remove-AppxPackage -AllUsers\n      Get-AppxPackage MicrosoftWindows.Client.WebExperience -AllUsers | Remove-AppxPackage -AllUsers\n\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\n      Write-Host \"Removed widgets\"\n      "
+      "      # Widgets/News & Interests components differ by Windows version (primarily Windows 11).\n      try { Get-Process *Widget* -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue } catch {}\n      $widgetPackages = @(\n        'Microsoft.WidgetsPlatformRuntime',\n        'MicrosoftWindows.Client.WebExperience'\n      )\n      $removed = $false\n      foreach ($pkg in $widgetPackages) {\n        $installed = Get-AppxPackage -Name $pkg -AllUsers -ErrorAction SilentlyContinue\n        if ($installed) {\n          try {\n            $installed | Remove-AppxPackage -AllUsers -ErrorAction Stop\n            Write-WinUtilLog -Level 'INFO' -Component 'Widgets' -Message \"Removed AppX package: $pkg\"\n            $removed = $true\n          } catch {\n            Write-WinUtilLog -Level 'WARN' -Component 'Widgets' -Message \"Unable to remove AppX package $pkg: $($_.Exception.Message)\"\n          }\n        } else {\n          Write-WinUtilLog -Level 'INFO' -Component 'Widgets' -Message \"AppX package not present: $pkg\"\n        }\n      }\n      try { Invoke-WinUtilExplorerUpdate -action \"restart\" } catch {}\n      if ($removed) {\n        Write-Host \"Removed widgets components where present.\"\n      } else {\n        Write-Host \"No removable widget components were found on this system (this is expected on many Windows 10 installations).\"\n      }"
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/widget"
   },
- "WPFTweaksRevertStartMenu": {
+  "WPFTweaksRevertStartMenu": {
     "Content": "Start Menu Previous Layout - Enable",
-    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2. On newer versions of Windows !!THIS TWEAK WILL NOT WORK!!",
+    "Description": "Applies a Windows 11 Start menu layout feature override on builds where supported. Not applicable on Windows 10 or unsupported Windows 11 builds; WinUtil skips it safely when not applicable.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
       {
-        "Path": "HKLM:\\SYSTEM\\ControlSet001\\Control\\FeatureManagement\\Overrides\\8\\3036241548",
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FeatureManagement\\Overrides\\8\\3036241548",
         "Name": "EnabledState",
         "Value": "1",
         "Type": "DWord",
@@ -86,14 +86,14 @@
   },
   "WPFTweaksDisableStoreSearch": {
     "Content": "Microsoft Store Recommended Search Results - Disable",
-    "Description": "Will not display recommended Microsoft Store apps when searching for apps in the Start menu.",
+    "Description": "Disables Microsoft Store recommended search results by restricting the local Store search database when present. Skips safely if the database is not found (common on some Windows 10/11 profiles).",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /deny *S-1-1-0:F"
+      "      $storeDb = Join-Path $Env:LocalAppData 'Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db'\n      if (-not (Test-Path -LiteralPath $storeDb)) {\n        Write-WinUtilHost \"Microsoft Store search database not found at '$storeDb'. Skipping (not applicable on this profile/system).\"\n        Write-WinUtilLog -Level 'WARN' -Component 'StoreSearch' -Message \"Store database not found; skipping: $storeDb\"\n        return\n      }\n      icacls $storeDb /deny *S-1-1-0:F\n      if ($LASTEXITCODE -ne 0) { throw \"icacls failed with exit code $LASTEXITCODE while denying access to $storeDb\" }"
     ],
     "UndoScript": [
-      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /grant *S-1-1-0:F"
+      "      $storeDb = Join-Path $Env:LocalAppData 'Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db'\n      if (-not (Test-Path -LiteralPath $storeDb)) {\n        Write-WinUtilHost \"Microsoft Store search database not found at '$storeDb'. Nothing to restore.\"\n        Write-WinUtilLog -Level 'WARN' -Component 'StoreSearch' -Message \"Store database not found during undo; skipping: $storeDb\"\n        return\n      }\n      icacls $storeDb /grant *S-1-1-0:F\n      if ($LASTEXITCODE -ne 0) { throw \"icacls failed with exit code $LASTEXITCODE while restoring access to $storeDb\" }"
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/disablestoresearch"
   },
@@ -577,27 +577,27 @@
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Microsoft Edge - Remove",
-    "Description": "Uninstalls Microsoft Edge by creating dummy MicrosoftEdge.exe file in the legacy Edge folder. This tricks Windows into unlocking the official Edge uninstaller allowing for a system-level removal.",
+    "Description": "Attempts to uninstall Microsoft Edge using the legacy system-app uninstall method when supported. On Windows 10/11 builds where required Edge components or installers are not present, the tweak skips safely with an explicit message. Undo attempts reinstall via winget/choco when available.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "      $EdgeAppDir = \\\"$Env:ProgramFiles (x86)\\\\Microsoft\\\\Edge\\\\Application\\\"\n      $SetupPath = $null\n      $EdgeSystemAppDir = $null\n\n      try {\n          if (Test-Path -LiteralPath $EdgeAppDir -ErrorAction Stop) {\n              $SetupPath = Get-ChildItem -Path (Join-Path $EdgeAppDir '*\\\\Installer\\\\setup.exe') -File -ErrorAction Stop |\n                  Sort-Object FullName -Descending |\n                  Select-Object -First 1 -ExpandProperty FullName\n          }\n\n          $EdgeSystemAppDir = Get-ChildItem -Path \\\"$Env:SystemRoot\\\\SystemApps\\\" -Directory -Filter 'Microsoft.MicrosoftEdge_*' -ErrorAction Stop |\n              Sort-Object FullName -Descending |\n              Select-Object -First 1 -ExpandProperty FullName\n\n          if (-not $EdgeSystemAppDir) {\n              throw 'Microsoft Edge system app directory not found.'\n          }\n\n          $DummyEdgePath = Join-Path $EdgeSystemAppDir 'MicrosoftEdge.exe'\n          New-Item -Path $DummyEdgePath -ItemType File -Force -ErrorAction Stop | Out-Null\n\n          if (-not $SetupPath) {\n              throw 'Microsoft Edge installer not found.'\n          }\n\n          Start-Process -FilePath $SetupPath -ArgumentList '--uninstall --system-level --force-uninstall --delete-profile' -Wait -ErrorAction Stop\n          Write-WinUtilHost 'Microsoft Edge was removed'\n          Write-WinUtilLog -Level 'INFO' -Component 'RemoveEdge' -Message 'Microsoft Edge was removed'\n      } catch {\n          Write-WinUtilLog -Level 'ERROR' -Component 'RemoveEdge' -Message \\\"Failed to remove Edge: $($_.Exception.Message)\\\"\n          Write-WinUtilHost 'Failed to uninstall Microsoft Edge.'\n          throw\n      }"
+      "      $EdgeAppDir = \"$Env:ProgramFiles (x86)\\Microsoft\\Edge\\Application\"\n      $SetupPath = $null\n      $EdgeSystemAppDir = $null\n\n      try {\n          if (Test-Path -LiteralPath $EdgeAppDir -ErrorAction SilentlyContinue) {\n              $SetupPath = Get-ChildItem -Path (Join-Path $EdgeAppDir '*\\Installer\\setup.exe') -File -ErrorAction SilentlyContinue |\n                  Sort-Object FullName -Descending |\n                  Select-Object -First 1 -ExpandProperty FullName\n          }\n\n          $systemAppsRoot = \"$Env:SystemRoot\\SystemApps\"\n          if (Test-Path -LiteralPath $systemAppsRoot -ErrorAction SilentlyContinue) {\n              $EdgeSystemAppDir = Get-ChildItem -Path $systemAppsRoot -Directory -Filter 'Microsoft.MicrosoftEdge_*' -ErrorAction SilentlyContinue |\n                  Sort-Object FullName -Descending |\n                  Select-Object -First 1 -ExpandProperty FullName\n          }\n\n          if (-not $SetupPath) {\n              $msg = 'Microsoft Edge installer (setup.exe) was not found. Removal is not applicable or not supported on this installation.'\n              Write-WinUtilHost $msg\n              Write-WinUtilLog -Level 'WARN' -Component 'RemoveEdge' -Message $msg\n              return\n          }\n          if (-not $EdgeSystemAppDir) {\n              $msg = 'Legacy Microsoft Edge system app directory was not found. Skipping removal to avoid unsupported changes on this Windows version/installation.'\n              Write-WinUtilHost $msg\n              Write-WinUtilLog -Level 'WARN' -Component 'RemoveEdge' -Message $msg\n              return\n          }\n\n          $DummyEdgePath = Join-Path $EdgeSystemAppDir 'MicrosoftEdge.exe'\n          New-Item -Path $DummyEdgePath -ItemType File -Force -ErrorAction Stop | Out-Null\n\n          $proc = Start-Process -FilePath $SetupPath -ArgumentList '--uninstall --system-level --force-uninstall --delete-profile' -Wait -PassThru -ErrorAction Stop\n          if ($proc.ExitCode -ne 0) {\n              throw \"Edge uninstaller exited with code $($proc.ExitCode)\"\n          }\n          Write-WinUtilHost 'Microsoft Edge removal was attempted successfully.'\n          Write-WinUtilLog -Level 'INFO' -Component 'RemoveEdge' -Message 'Microsoft Edge uninstall command completed.'\n      } catch {\n          Write-WinUtilLog -Level 'ERROR' -Component 'RemoveEdge' -Message \"Failed to remove Edge: $($_.Exception.Message)\"\n          Write-WinUtilHost 'Failed to uninstall Microsoft Edge. This tweak may not be supported on this Windows version/build.'\n          throw\n      }"
     ],
     "UndoScript": [
-      "      Write-WinUtilHost 'Installing Microsoft Edge...'\n      Write-WinUtilLog -Level 'INFO' -Component 'RemoveEdge' -Message 'Installing Microsoft Edge via winget'\n      winget install Microsoft.Edge --source winget"
+      "      Write-WinUtilHost 'Attempting to install Microsoft Edge...'\n      Write-WinUtilLog -Level 'INFO' -Component 'RemoveEdge' -Message 'Attempting to install Microsoft Edge'\n      try {\n          if (Get-Command winget -ErrorAction SilentlyContinue) {\n              $p = Start-Process -FilePath 'winget' -ArgumentList 'install --id Microsoft.Edge --source winget --accept-package-agreements --accept-source-agreements' -Wait -PassThru -NoNewWindow -ErrorAction Stop\n              if ($p.ExitCode -ne 0) { throw \"winget install Microsoft.Edge failed with exit code $($p.ExitCode)\" }\n              Write-WinUtilHost 'Microsoft Edge installation command completed via winget.'\n              return\n          }\n          if (Get-Command choco -ErrorAction SilentlyContinue) {\n              $p = Start-Process -FilePath 'choco' -ArgumentList 'install microsoft-edge -y --no-progress' -Wait -PassThru -NoNewWindow -ErrorAction Stop\n              if ($p.ExitCode -ne 0) { throw \"choco install microsoft-edge failed with exit code $($p.ExitCode)\" }\n              Write-WinUtilHost 'Microsoft Edge installation command completed via Chocolatey.'\n              return\n          }\n          $msg = 'Neither winget nor choco is available to reinstall Microsoft Edge automatically. Please reinstall Edge manually from Microsoft.'\n          Write-WinUtilHost $msg\n          Write-WinUtilLog -Level 'WARN' -Component 'RemoveEdge' -Message $msg\n      } catch {\n          Write-WinUtilLog -Level 'ERROR' -Component 'RemoveEdge' -Message \"Failed to reinstall Edge: $($_.Exception.Message)\"\n          throw\n      }"
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/removeedge"
   },
   "WPFTweaksDisableBitLocker": {
     "Content": "BitLocker - Disable",
-    "Description": "Disables BitLocker.",
+    "Description": "Disables BitLocker on the system drive when BitLocker is available. Undo does not blindly re-enable encryption/protectors (safety); it reports status and guidance when automatic re-enable is not safe.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
       "      if (-not (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue)) {\n          Write-WinUtilHost 'BitLocker is not available on this system.'\n          Write-WinUtilLog -Level 'WARN' -Component 'DisableBitLocker' -Message 'BitLocker is not available on this system.'\n          return\n      }\n\n      try {\n          $bitLockerVolume = Get-BitLockerVolume -MountPoint $Env:SystemDrive -ErrorAction Stop\n\n          if ($bitLockerVolume.VolumeStatus -eq 'FullyDecrypted') {\n              Write-WinUtilHost \\\"BitLocker is already disabled on $($Env:SystemDrive).\\\"\n              Write-WinUtilLog -Level 'INFO' -Component 'DisableBitLocker' -Message \\\"BitLocker is already disabled on $($Env:SystemDrive)\\\"\n          } else {\n              Disable-BitLocker -MountPoint $Env:SystemDrive -ErrorAction Stop\n              Write-WinUtilHost \\\"BitLocker has been disabled on $($Env:SystemDrive).\\\"\n              Write-WinUtilLog -Level 'INFO' -Component 'DisableBitLocker' -Message \\\"BitLocker disabled on $($Env:SystemDrive)\\\"\n          }\n      } catch {\n          Write-WinUtilLog -Level 'ERROR' -Component 'DisableBitLocker' -Message \\\"Failed to disable BitLocker: $($_.Exception.Message)\\\"\n          Write-WinUtilHost 'Failed to disable BitLocker.'\n          throw\n      }"
     ],
     "UndoScript": [
-      "Enable-BitLocker -MountPoint $Env:SystemDrive"
+      "      if (-not (Get-Command Enable-BitLocker -ErrorAction SilentlyContinue) -or -not (Get-Command Get-BitLockerVolume -ErrorAction SilentlyContinue)) {\n          $msg = 'BitLocker cmdlets are not available on this system. Cannot safely re-enable BitLocker automatically.'\n          Write-WinUtilHost $msg\n          Write-WinUtilLog -Level 'WARN' -Component 'DisableBitLocker' -Message $msg\n          return\n      }\n      try {\n          $vol = Get-BitLockerVolume -MountPoint $Env:SystemDrive -ErrorAction Stop\n          if ($vol.ProtectionStatus -eq 'On' -and $vol.VolumeStatus -ne 'FullyDecrypted') {\n              Write-WinUtilHost \"BitLocker protection already appears enabled on $($Env:SystemDrive).\"\n              Write-WinUtilLog -Level 'INFO' -Component 'DisableBitLocker' -Message \"BitLocker already enabled/protected on $($Env:SystemDrive); skipping.\"\n              return\n          }\n          $msg = 'Automatic BitLocker re-enable was skipped for safety (protectors/recovery configuration may be required). Enable BitLocker manually from Windows Security/Manage BitLocker if needed.'\n          Write-WinUtilHost $msg\n          Write-WinUtilLog -Level 'WARN' -Component 'DisableBitLocker' -Message $msg\n      } catch {\n          $msg = \"Unable to determine BitLocker state or safely re-enable: $($_.Exception.Message)\"\n          Write-WinUtilHost $msg\n          Write-WinUtilLog -Level 'WARN' -Component 'DisableBitLocker' -Message $msg\n      }"
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/disablebitlocker"
   },
@@ -812,7 +812,7 @@
   },
   "WPFTweaksWindowsAI": {
     "Content": "Windows AI - Disable And Remove",
-    "Description": "Removes and disables all AI features/packages",
+    "Description": "Removes/disables Windows AI components (Copilot, Recall-related features, etc.) on supported Windows 11 builds. On Windows 10 or unsupported builds, WinUtil skips this tweak safely.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -1272,7 +1272,7 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/newoutlook"
   },
-    "WPFToggleScrollbars": {
+  "WPFToggleScrollbars": {
     "Content": "Scrollbars Always Visible",
     "Description": "If enabled, scrollbars will always be visible. If disabled, Windows will automatically hide scrollbars when not in use.",
     "category": "Customize Preferences",
