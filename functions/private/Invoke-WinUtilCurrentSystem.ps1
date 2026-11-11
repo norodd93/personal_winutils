@@ -159,4 +159,31 @@ Function Invoke-WinUtilCurrentSystem {
             }
         }
     }
+
+    if ($CheckBox -eq "features") {
+        $canQueryFeatures = $false
+        try { $canQueryFeatures = [bool](Get-Command Get-WindowsOptionalFeature -ErrorAction SilentlyContinue) } catch { $canQueryFeatures = $false }
+        if (-not $canQueryFeatures) { return }
+
+        foreach ($prop in $sync.configs.feature.PSObject.Properties) {
+            $Config = $prop.Name
+            $entry = $prop.Value
+            $featureNames = @($entry.feature | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+            if ($featureNames.Count -eq 0) { continue }
+
+            $allEnabled = $true
+            foreach ($featureName in $featureNames) {
+                try {
+                    $state = (Get-WindowsOptionalFeature -Online -FeatureName $featureName -ErrorAction $readErrorAction).State
+                    if ($state -notin @("Enabled", "EnablePending")) { $allEnabled = $false; break }
+                } catch {
+                    if ($StopOnReadError) { throw }
+                    $allEnabled = $false
+                    break
+                }
+            }
+
+            if ($allEnabled) { Write-Output $Config }
+        }
+    }
 }

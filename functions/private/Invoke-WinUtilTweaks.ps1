@@ -31,12 +31,12 @@ function Invoke-WinUtilTweaks {
     # runspace cannot be charged to a toggle flipped on the UI thread
     $errorsBefore = [int]$global:WinUtilJobErrorCount
 
-    # Windows 10 best-effort support: skip tweaks that are not applicable.
+    # Windows 10 best-effort support: skip tweaks that are not applicable as a whole.
     $osInfo = if (Get-Command Get-WinUtilOSInfo -ErrorAction SilentlyContinue) { Get-WinUtilOSInfo } else { $null }
     $isWin10 = $osInfo -and $osInfo.IsWindows10
     if ($isWin10) {
-        # These rely on Windows 11-only components/features and can fail or have no safe equivalent.
-        $win11OnlyTweaks = @("WPFTweaksWindowsAI", "WPFTweaksRevertStartMenu")
+        # This relies on a Windows 11-only Start menu feature override with no safe/useful Windows 10 equivalent.
+        $win11OnlyTweaks = @("WPFTweaksRevertStartMenu")
         if ($win11OnlyTweaks -contains $CheckBox) {
             $msg = "Tweak $CheckBox is not applicable on Windows 10 (build $($osInfo.BuildNumber)); skipping."
             Write-Warning $msg
