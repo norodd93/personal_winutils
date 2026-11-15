@@ -1,6 +1,6 @@
 ---
 title: "IPv6 - Set IPv4 as Preferred"
-description: "Setting the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured."
+description: "Prefers IPv4 over IPv6 by setting DisabledComponents. Mutually exclusive with other IPv6 mode tweaks; undo the active IPv6 mode before applying a different one (WinUtil blocks conflicting apply/undo)."
 editUrl: false
 ---
 
@@ -8,10 +8,10 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksIPv46": {
     "Content": "IPv6 - Set IPv4 as Preferred",
-    "Description": "Setting the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
+    "Description": "Prefers IPv4 over IPv6 by setting DisabledComponents. Mutually exclusive with other IPv6 mode tweaks; undo the active IPv6 mode before applying a different one (WinUtil blocks conflicting apply/undo).",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
@@ -20,11 +20,11 @@ This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitus
         "Name": "DisabledComponents",
         "Value": "32",
         "Type": "DWord",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
   }
-```
+````
 
 ## Registry Changes
 

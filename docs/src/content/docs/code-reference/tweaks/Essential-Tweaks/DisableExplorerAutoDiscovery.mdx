@@ -8,59 +8,17 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksDisableExplorerAutoDiscovery": {
     "Content": "File Explorer Automatic Folder Discovery - Disable",
     "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience. WARNING! Will disable File Explorer grouping.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "
-      # Previously detected folders
-      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
-
-      # Folder types lookup table
-      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
-
-      # Flush Explorer view database
-      Remove-Item -Path $bags -Recurse -Force
-      Write-Host \"Removed $bags\"
-
-      Remove-Item -Path $bagMRU -Recurse -Force
-      Write-Host \"Removed $bagMRU\"
-
-      # Every folder
-      $allFolders = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell\"
-
-      if (!(Test-Path $allFolders)) {
-        New-Item -Path $allFolders -Force
-        Write-Host \"Created $allFolders\"
-      }
-
-      # Generic view
-      New-ItemProperty -Path $allFolders -Name \"FolderType\" -Value \"NotSpecified\" -PropertyType String -Force
-      Write-Host \"Set FolderType to NotSpecified\"
-
-      Write-Host Please sign out and back in, or restart your computer to apply the changes!
-      "
+      "      $bags = \\\"HKCU:\\\\Software\\\\Classes\\\\Local Settings\\\\Software\\\\Microsoft\\\\Windows\\\\Shell\\\\Bags\\\"\n      $bagMRU = \\\"HKCU:\\\\Software\\\\Classes\\\\Local Settings\\\\Software\\\\Microsoft\\\\Windows\\\\Shell\\\\BagMRU\\\"\n\n      try {\n          # Flush Explorer view database\n          if (Test-Path -LiteralPath $bags) {\n              Remove-Item -Path $bags -Recurse -Force -ErrorAction Stop\n              Write-WinUtilHost \\\"Removed $bags\\\"\n              Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableExplorerAutoDiscovery\\\" -Message \\\"Removed $bags\\\"\n          }\n\n          if (Test-Path -LiteralPath $bagMRU) {\n              Remove-Item -Path $bagMRU -Recurse -Force -ErrorAction Stop\n              Write-WinUtilHost \\\"Removed $bagMRU\\\"\n              Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableExplorerAutoDiscovery\\\" -Message \\\"Removed $bagMRU\\\"\n          }\n\n          $allFolders = \\\"HKCU:\\\\Software\\\\Classes\\\\Local Settings\\\\Software\\\\Microsoft\\\\Windows\\\\Shell\\\\Bags\\\\AllFolders\\\\Shell\\\"\n\n          if (!(Test-Path $allFolders)) {\n              New-Item -Path $allFolders -Force -ErrorAction Stop | Out-Null\n              Write-WinUtilHost \\\"Created $allFolders\\\"\n              Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableExplorerAutoDiscovery\\\" -Message \\\"Created $allFolders\\\"\n          }\n\n          # Generic view\n          New-ItemProperty -Path $allFolders -Name \\\"FolderType\\\" -Value \\\"NotSpecified\\\" -PropertyType String -Force -ErrorAction Stop | Out-Null\n          Write-WinUtilHost \\\"Set FolderType to NotSpecified\\\"\n          Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableExplorerAutoDiscovery\\\" -Message \\\"Set FolderType to NotSpecified\\\"\n      } catch {\n          Write-WinUtilLog -Level \\\"ERROR\\\" -Component \\\"DisableExplorerAutoDiscovery\\\" -Message \\\"Failed to apply auto-discovery disable: $($_.Exception.Message)\\\"\n          Write-WinUtilHost \\\"Failed to disable Explorer automatic folder discovery.\\\"\n          throw\n      }\n\n      Write-WinUtilHost \\\"Please sign out and back in, or restart your computer to apply the changes!\\\""
     ],
     "UndoScript": [
-      "
-      # Previously detected folders
-      $bags = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\"
-
-      # Folder types lookup table
-      $bagMRU = \"HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU\"
-
-      # Flush Explorer view database
-      Remove-Item -Path $bags -Recurse -Force
-      Write-Host \"Removed $bags\"
-
-      Remove-Item -Path $bagMRU -Recurse -Force
-      Write-Host \"Removed $bagMRU\"
-
-      Write-Host Please sign out and back in, or restart your computer to apply the changes!
-      "
+      "      $bags = \\\"HKCU:\\\\Software\\\\Classes\\\\Local Settings\\\\Software\\\\Microsoft\\\\Windows\\\\Shell\\\\Bags\\\"\n      $bagMRU = \\\"HKCU:\\\\Software\\\\Classes\\\\Local Settings\\\\Software\\\\Microsoft\\\\Windows\\\\Shell\\\\BagMRU\\\"\n\n      try {\n          # Flush Explorer view database\n          if (Test-Path -LiteralPath $bags) {\n              Remove-Item -Path $bags -Recurse -Force -ErrorAction Stop\n              Write-WinUtilHost \\\"Removed $bags\\\"\n              Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableExplorerAutoDiscovery\\\" -Message \\\"Removed $bags\\\"\n          }\n\n          if (Test-Path -LiteralPath $bagMRU) {\n              Remove-Item -Path $bagMRU -Recurse -Force -ErrorAction Stop\n              Write-WinUtilHost \\\"Removed $bagMRU\\\"\n              Write-WinUtilLog -Level \\\"INFO\\\" -Component \\\"DisableExplorerAutoDiscovery\\\" -Message \\\"Removed $bagMRU\\\"\n          }\n      } catch {\n          Write-WinUtilLog -Level \\\"ERROR\\\" -Component \\\"DisableExplorerAutoDiscovery\\\" -Message \\\"Failed to undo auto-discovery disable: $($_.Exception.Message)\\\"\n          Write-WinUtilHost \\\"Failed to undo Explorer automatic folder discovery disable.\\\"\n          throw\n      }\n\n      Write-WinUtilHost \\\"Please sign out and back in, or restart your computer to apply the changes!\\\""
     ],
   }
-```
+````

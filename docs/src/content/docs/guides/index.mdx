@@ -9,8 +9,8 @@ import YouTubeEmbed from '../../../components/YouTubeEmbed.astro';
 
 Welcome to the official User Guide for **Winutil**, your all-in-one Windows toolkit.
 
-:::caution
-Windows 10 is not supported by Winutil. Windows 10 reached the end of support on **October 14, 2025**.
+:::note
+WinUtil targets **Windows 11** and provides **best-effort support for Windows 10** where possible. Windows 10 reached end of support on **October 14, 2025**. Some tweaks, features, app installs, and tools are Windows 11-only or edition/build-dependent; on Windows 10 these are skipped, hidden/disabled, or reported with an explicit message instead of failing. Upstream package availability depends on the publisher/package manager.
 :::
 
 ## What is Winutil?
@@ -103,8 +103,8 @@ Before using Winutil:
 
 ## System Requirements
 
-- **Operating System**: Windows 11
-- **PowerShell**: Version 5.1 or later (included in Windows 11)
+- **Operating System**: Windows 11 (primary). Windows 10 is supported on a best-effort basis with limitations; unsupported/inapplicable items are skipped or disabled with explicit messages.
+- **PowerShell**: Version 5.1 or later
 - **Permissions**: Administrator access required
 - **Internet**: Required for downloading apps and updates
 - **.NET Framework**: 4.5+ (usually pre-installed)

@@ -5,9 +5,11 @@ description: Common questions about installing, running, and troubleshooting Win
 
 ## General questions
 
-### Is Windows 10 still supported?
+### Is Windows 10 supported?
 
-No. Windows 10 is no longer supported by WinUtil because it reached the end of support on **October 14, 2025**. WinUtil is focused on Windows 11.
+WinUtil is primarily developed and tested for **Windows 11**, but it now provides **best-effort support for Windows 10** where possible. Windows 10 reached end of support on **October 14, 2025**.
+
+On Windows 10, tweaks, features, app installs, and tools that are not applicable to your Windows version, edition, or build are skipped, hidden/disabled, or reported with an explicit warning/log message instead of causing a hard failure. Some capabilities remain Windows 11-only (for example, Win11 Creator and certain Windows 11-specific tweaks/features). Upstream app package availability (WinGet/Chocolatey) on Windows 10 depends on the package publisher.
 
 ### How do I uninstall WinUtil?
 
@@ -66,7 +68,7 @@ Try these solutions in order:
    ```
 
    :::note
-   On Windows 11, you usually do not need the TLS 1.2 command. Use it only if you encounter download or security protocol errors.
+   On modern Windows 11 systems this is usually unnecessary, but it can still help on older Windows 10/PowerShell environments if you encounter download or security protocol errors.
    :::
 
 3. **Change DNS** to Cloudflare (1.1.1.1) or Google (8.8.8.8)
@@ -227,7 +229,7 @@ Yes, WinUtil works on Windows Server editions, though some features may not be a
 
 ### Does WinUtil work with Windows LTSC?
 
-WinUtil currently targets Windows 11. Windows 10 LTSC is not supported, consistent with the Windows 10 support policy above. Some features and applications may vary by Windows 11 edition.
+WinUtil primarily targets Windows 11 and offers best-effort behavior on Windows 10 (including LTSC where applicable actions are supported by the OS/tools). Some features, tweaks, and applications vary by Windows version, edition, and build. Windows 11-only tools (such as Win11 Creator) are unavailable on Windows 10 with an explicit message, and unsupported or unavailable items are skipped safely when detected.
 
 ### Can I use WinUtil in a corporate/enterprise environment?
 

@@ -1,6 +1,6 @@
 ---
 title: "Network File System (NFS) - Enable"
-description: "Network File System (NFS) is a mechanism for storing files on a network."
+description: "Network File System (NFS) is a mechanism for storing files on a network. NFS client components may not be available on all Windows 10/11 editions."
 editUrl: false
 ---
 
@@ -8,10 +8,10 @@ editUrl: false
 This page is generated from [`config/feature.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/feature.json). Do not edit this page directly.
 :::
 
-```json title="config/feature.json"
+````json title="config/feature.json"
   "WPFFeaturenfs": {
     "Content": "Network File System (NFS) - Enable",
-    "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
+    "Description": "Network File System (NFS) is a mechanism for storing files on a network. NFS client components may not be available on all Windows 10/11 editions.",
     "category": "Features",
     "panel": "1",
     "feature": [
@@ -27,4 +27,4 @@ This page is generated from [`config/feature.json`](https://github.com/ChrisTitu
       "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
     ],
   }
-```
+````

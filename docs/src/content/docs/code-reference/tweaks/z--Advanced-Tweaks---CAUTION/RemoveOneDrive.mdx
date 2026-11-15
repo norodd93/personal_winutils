@@ -1,6 +1,6 @@
 ---
 title: "Microsoft OneDrive - Remove"
-description: "Denies permission to remove OneDrive user files, then uses its own uninstaller to remove it and restores the original permission afterward."
+description: "Best-effort OneDrive removal for Windows 10/11: attempts uninstall via OneDriveSetup/winget where available, performs safe leftover cleanup, preserves user files (does not delete non-empty OneDrive folder), and protects/restores folder ACL when possible. Some systems/components may retain or restore OneDrive. Undo attempts reinstall/restore via winget/choco/built-in setup and provides manual guidance; sign-in may be required."
 editUrl: false
 ---
 
@@ -8,75 +8,17 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksRemoveOneDrive": {
     "Content": "Microsoft OneDrive - Remove",
-    "Description": "Denies permission to remove OneDrive user files, then uses its own uninstaller to remove it and restores the original permission afterward.",
+    "Description": "Best-effort OneDrive removal for Windows 10/11: attempts uninstall via OneDriveSetup/winget where available, performs safe leftover cleanup, preserves user files (does not delete non-empty OneDrive folder), and protects/restores folder ACL when possible. Some systems/components may retain or restore OneDrive. Undo attempts reinstall/restore via winget/choco/built-in setup and provides manual guidance; sign-in may be required.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "
-      $OneDrivePath = $Env:OneDrive
-      $OneDriveFolderExists = -not [string]::IsNullOrWhiteSpace($OneDrivePath) -and (Test-Path -LiteralPath $OneDrivePath -PathType Container -ErrorAction Stop)
-
-      if ($OneDriveFolderExists) {
-          $OneDriveAcl = Get-Acl -LiteralPath $OneDrivePath -ErrorAction Stop
-      } else {
-          Write-Host \"OneDrive folder is already absent; skipping folder permissions and cleanup.\"
-      }
-
-      try {
-          if ($OneDriveFolderExists) {
-              # Protect user files while the uninstaller runs.
-              icacls $OneDrivePath /deny \"*S-1-5-32-544:(D,DC)\"
-              if ($LASTEXITCODE -ne 0) { throw \"Unable to protect the OneDrive folder (icacls exit code $LASTEXITCODE).\" }
-          }
-
-          Write-Host \"Uninstalling OneDrive...\"
-          Start-Process -FilePath (Join-Path $Env:SystemRoot \"System32\\OneDriveSetup.exe\") -ArgumentList '/uninstall' -Wait -ErrorAction Stop
-
-          # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
-          Write-Host \"Removing leftover OneDrive Files...\"
-
-          Get-Process -ErrorAction Stop | Where-Object ProcessName -eq 'FileCoAuth' | Stop-Process -ErrorAction Stop
-          Get-Process -ErrorAction Stop | Where-Object ProcessName -eq 'Explorer' | Stop-Process -ErrorAction Stop
-
-          $OneDriveLeftovers = @(\"$Env:LocalAppData\\Microsoft\\OneDrive\", \"$Env:ProgramData\\Microsoft OneDrive\")
-          foreach ($LeftoverPath in $OneDriveLeftovers) {
-              if (Test-Path -LiteralPath $LeftoverPath -ErrorAction Stop) {
-                  Remove-Item -LiteralPath $LeftoverPath -Recurse -Force -ErrorAction Stop
-              }
-          }
-      } finally {
-          if ($OneDriveFolderExists) {
-              # Restore access even when uninstall or leftover cleanup fails.
-              Set-Acl -LiteralPath $OneDrivePath -AclObject $OneDriveAcl -ErrorAction Stop
-          }
-      }
-
-      if ($OneDriveFolderExists -and -not (Get-ChildItem -LiteralPath $OneDrivePath -Force -ErrorAction Stop)) {
-          # Refuse to delete if files appeared after the emptiness check.
-          [System.IO.Directory]::Delete($OneDrivePath, $false)
-          [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
-      }
-
-      # OneSyncSvc is a per-user template; Get-Service only exposes user instances.
-      # Skip the operation if this Windows installation has no template.
-      if (Test-Path -LiteralPath 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\OneSyncSvc') {
-          Set-Service -Name OneSyncSvc -StartupType Disabled
-      }
-      "
+      "      $OneDrivePath = $Env:OneDrive\n      $OneDriveFolderExists = -not [string]::IsNullOrWhiteSpace($OneDrivePath) -and (Test-Path -LiteralPath $OneDrivePath -PathType Container -ErrorAction SilentlyContinue)\n\n      $OneDriveAcl = $null\n      if ($OneDriveFolderExists) {\n        try { $OneDriveAcl = Get-Acl -LiteralPath $OneDrivePath -ErrorAction Stop } catch {\n          Write-WinUtilLog -Level 'WARN' -Component 'RemoveOneDrive' -Message \"Failed to capture OneDrive ACL: $($_.Exception.Message)\"\n          Write-WinUtilHost 'Failed to capture OneDrive folder permissions; continuing best-effort.'\n        }\n      } else {\n        Write-WinUtilHost 'OneDrive folder is not present for this profile; proceeding with best-effort uninstall/cleanup.'\n        Write-WinUtilLog -Level 'INFO' -Component 'RemoveOneDrive' -Message 'OneDrive folder absent for current profile.'\n      }\n\n      $uninstalled = $false\n      try {\n        if ($OneDriveFolderExists) {\n          try { icacls \"$OneDrivePath\" /deny \"*S-1-5-32-544:(D,DC)\" /T /C | Out-Null } catch { Write-WinUtilLog -Level 'WARN' -Component 'RemoveOneDrive' -Message \"Unable to protect OneDrive folder: $($_.Exception.Message)\" }\n        }\n\n        Write-WinUtilHost 'Uninstalling OneDrive (best-effort)...'\n        $setupCandidates = @(\n          \"$Env:SystemRootSystem32OneDriveSetup.exe\",\n          \"$Env:SystemRootSysWOW64OneDriveSetup.exe\"\n        ) | Where-Object { $_ -and (Test-Path -LiteralPath $_ -ErrorAction SilentlyContinue) }\n        foreach ($setup in $setupCandidates) {\n          try {\n            $p = Start-Process -FilePath $setup -ArgumentList '/uninstall' -Wait -PassThru -NoNewWindow -ErrorAction Stop\n            if ($p -and ($p.ExitCode -eq 0 -or $uninstalled -eq $false)) { $uninstalled = $true }\n            Write-WinUtilLog -Level 'INFO' -Component 'RemoveOneDrive' -Message \"Ran OneDrive setup uninstall: $setup (exit $($p.ExitCode))\"\n          } catch {\n            Write-WinUtilLog -Level 'WARN' -Component 'RemoveOneDrive' -Message \"OneDrive setup uninstall failed for $setup: $($_.Exception.Message)\"\n          }\n        }\n\n        # Fallback: winget uninstall if available\n        if (-not $uninstalled -and (Get-Command winget -ErrorAction SilentlyContinue)) {\n          try {\n            $p = Start-Process -FilePath 'winget' -ArgumentList 'uninstall --id Microsoft.OneDrive --silent --accept-source-agreements --disable-interactivity' -Wait -PassThru -NoNewWindow -ErrorAction SilentlyContinue\n            if ($p -and $p.ExitCode -eq 0) { $uninstalled = $true }\n            Write-WinUtilLog -Level 'INFO' -Component 'RemoveOneDrive' -Message \"winget OneDrive uninstall exit: $($p.ExitCode 2>$null)\"\n          } catch { Write-WinUtilLog -Level 'WARN' -Component 'RemoveOneDrive' -Message \"winget OneDrive uninstall failed: $($_.Exception.Message)\" }\n        }\n\n        # Stop related processes best-effort\n        foreach ($name in @('OneDrive','FileCoAuth','OneDriveStandaloneUpdater')) {\n          try { Get-Process -Name $name -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue } catch {}\n        }\n\n        $OneDriveLeftovers = @(\"$Env:LocalAppDataMicrosoftOneDrive\", \"$Env:ProgramDataMicrosoft OneDrive\", \"$Env:SystemDriveOneDriveTemp\")\n        foreach ($LeftoverPath in $OneDriveLeftovers) {\n          try {\n            if (Test-Path -LiteralPath $LeftoverPath -ErrorAction SilentlyContinue) {\n              Remove-Item -LiteralPath $LeftoverPath -Recurse -Force -ErrorAction SilentlyContinue\n            }\n          } catch { Write-WinUtilLog -Level 'WARN' -Component 'RemoveOneDrive' -Message \"Failed to remove leftover path $LeftoverPath: $($_.Exception.Message)\" }\n        }\n\n        # OneSyncSvc template may not exist on all Windows 10/11 installations\n        try {\n          if (Test-Path -LiteralPath 'HKLM:SYSTEMCurrentControlSetServicesOneSyncSvc') {\n            Set-Service -Name OneSyncSvc -StartupType Disabled -ErrorAction SilentlyContinue\n          }\n        } catch { Write-WinUtilLog -Level 'WARN' -Component 'RemoveOneDrive' -Message \"Unable to disable OneSyncSvc: $($_.Exception.Message)\" }\n\n        if ($uninstalled) {\n          Write-WinUtilHost 'OneDrive uninstall steps completed (best-effort).'\n          Write-WinUtilLog -Level 'INFO' -Component 'RemoveOneDrive' -Message 'OneDrive uninstall steps completed.'\n        } else {\n          Write-WinUtilHost 'OneDrive uninstall could not be fully confirmed on this system; remaining cleanup was attempted best-effort.'\n          Write-WinUtilLog -Level 'WARN' -Component 'RemoveOneDrive' -Message 'OneDrive uninstall not fully confirmed; cleanup attempted best-effort.'\n        }\n      } catch {\n        Write-WinUtilLog -Level 'ERROR' -Component 'RemoveOneDrive' -Message \"OneDrive removal encountered an error: $($_.Exception.Message)\"\n        throw\n      } finally {\n        if ($OneDriveFolderExists -and $OneDriveAcl) {\n          try { Set-Acl -LiteralPath $OneDrivePath -AclObject $OneDriveAcl -ErrorAction Stop } catch { Write-WinUtilLog -Level 'WARN' -Component 'RemoveOneDrive' -Message \"Failed to restore OneDrive ACL: $($_.Exception.Message)\" }\n        }\n      }\n\n      if ($OneDriveFolderExists -and (Test-Path -LiteralPath $OneDrivePath -PathType Container -ErrorAction SilentlyContinue)) {\n        try {\n          $items = @(Get-ChildItem -LiteralPath $OneDrivePath -Force -ErrorAction SilentlyContinue)\n          if ($items.Count -eq 0) {\n            Remove-Item -LiteralPath $OneDrivePath -Force -ErrorAction SilentlyContinue\n            try { [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User') } catch {}\n          } else {\n            Write-WinUtilLog -Level 'INFO' -Component 'RemoveOneDrive' -Message 'OneDrive folder not removed because it is not empty (user files preserved).'\n          }\n        } catch { Write-WinUtilLog -Level 'WARN' -Component 'RemoveOneDrive' -Message \"OneDrive folder cleanup check failed: $($_.Exception.Message)\" }\n      }"
     ],
     "UndoScript": [
-      "
-      Write-Host \"Installing OneDrive\"
-      winget install Microsoft.Onedrive --source winget
-
-      # Enable OneSyncSvc when the per-user service template exists
-      if (Test-Path -LiteralPath 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\OneSyncSvc') {
-          Set-Service -Name OneSyncSvc -StartupType Automatic
-      }
-      "
+      "      Write-WinUtilHost 'Attempting to install/restore OneDrive...'\n      Write-WinUtilLog -Level 'INFO' -Component 'RemoveOneDrive' -Message 'Attempting to install/restore OneDrive'\n\n      $installed = $false\n      $errors = @()\n      # Try winget/choco\n      try {\n        if (Get-Command winget -ErrorAction SilentlyContinue) {\n          $p = Start-Process -FilePath 'winget' -ArgumentList 'install --id Microsoft.OneDrive --source winget --accept-package-agreements --accept-source-agreements --silent --disable-interactivity' -Wait -PassThru -NoNewWindow -ErrorAction SilentlyContinue\n          if ($p -and $p.ExitCode -eq 0) { $installed = $true } else { $errors += \"winget exit $($p.ExitCode 2>$null)\" }\n        }\n      } catch { $errors += \"winget: $($_.Exception.Message)\" }\n      try {\n        if (-not $installed -and (Get-Command choco -ErrorAction SilentlyContinue)) {\n          $p = Start-Process -FilePath 'choco' -ArgumentList 'install onedrive -y --no-progress' -Wait -PassThru -NoNewWindow -ErrorAction SilentlyContinue\n          if ($p -and $p.ExitCode -eq 0) { $installed = $true } else { $errors += \"choco exit $($p.ExitCode 2>$null)\" }\n        }\n      } catch { $errors += \"choco: $($_.Exception.Message)\" }\n\n      # Try built-in setup if present\n      try {\n        if (-not $installed) {\n          $setupCandidates = @(\"$Env:SystemRootSysWOW64OneDriveSetup.exe\", \"$Env:SystemRootSystem32OneDriveSetup.exe\") | Where-Object { $_ -and (Test-Path -LiteralPath $_ -ErrorAction SilentlyContinue) }\n          foreach ($setup in $setupCandidates) {\n            $p = Start-Process -FilePath $setup -ArgumentList '/install' -Wait -PassThru -NoNewWindow -ErrorAction SilentlyContinue\n            if ($p -and $p.ExitCode -eq 0) { $installed = $true; break }\n          }\n        }\n      } catch { $errors += \"setup: $($_.Exception.Message)\" }\n\n      if ($installed) {\n        Write-WinUtilHost 'OneDrive install/restore command completed. Sign-in/sync configuration may be required.'\n        Write-WinUtilLog -Level 'INFO' -Component 'RemoveOneDrive' -Message 'OneDrive install/restore command completed.'\n      } else {\n        $msg = 'Automatic OneDrive reinstall did not complete. Reinstall OneDrive manually from https://www.microsoft.com/microsoft-365/onedrive/download if needed.'\n        if ($errors.Count -gt 0) { $msg += \" Details: $($errors -join '; ')\" }\n        Write-WinUtilHost $msg\n        Write-WinUtilLog -Level 'WARN' -Component 'RemoveOneDrive' -Message $msg\n      }\n\n      try {\n        if (Test-Path -LiteralPath 'HKLM:SYSTEMCurrentControlSetServicesOneSyncSvc') {\n          Set-Service -Name OneSyncSvc -StartupType Manual -ErrorAction SilentlyContinue\n        }\n      } catch { Write-WinUtilLog -Level 'WARN' -Component 'RemoveOneDrive' -Message \"Unable to re-enable OneSyncSvc: $($_.Exception.Message)\" }"
     ],
   }
-```
+````

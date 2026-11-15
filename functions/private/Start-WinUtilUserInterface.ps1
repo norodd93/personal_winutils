@@ -228,7 +228,15 @@ function Start-WinUtilUserInterface {
                 "T" { Invoke-WPFButton "WPFTab2BT"; $keyEventArgs.Handled = $true } # Navigate to Tweaks tab
                 "A" { Invoke-WPFButton "WPFTab5BT"; $keyEventArgs.Handled = $true } # Navigate to AppX tab
                 "C" { Invoke-WPFButton "WPFTab3BT"; $keyEventArgs.Handled = $true } # Navigate to Config tab
-                "W" { Invoke-WPFButton "WPFTab4BT"; $keyEventArgs.Handled = $true } # Navigate to Win11ISO tab
+                "W" {
+                    $osInfo = if (Get-Command Get-WinUtilOSInfo -ErrorAction SilentlyContinue) { Get-WinUtilOSInfo } else { $null }
+                    if ($osInfo -and -not $osInfo.IsWindows11) {
+                        Show-WinUtilMessage -Message "Win11 Creator is available on Windows 11 only." -Title "Win11 Creator unavailable" -Button "OK" -Icon "Warning"
+                    } else {
+                        Invoke-WPFButton "WPFTab4BT"
+                    }
+                    $keyEventArgs.Handled = $true
+                } # Navigate to Win11ISO tab
             }
         }
         # Handle Ctrl key combinations for specific actions
@@ -498,6 +506,16 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
         Invoke-WinUtilFontScaling -ScaleFactor $scaleFactor
         Invoke-WPFPopup -Action "Hide" -Popups @("FontScaling")
     })
+
+    # Gate Win11 Creator on Windows 10/unsupported systems.
+    $osInfo = if (Get-Command Get-WinUtilOSInfo -ErrorAction SilentlyContinue) { Get-WinUtilOSInfo } else { $null }
+    if ($osInfo -and -not $osInfo.IsWindows11 -and $sync["WPFTab4BT"]) {
+        $sync["WPFTab4BT"].IsEnabled = $false
+        $sync["WPFTab4BT"].Visibility = "Collapsed"
+        $sync["WPFTab4BT"].ToolTip = "Win11 Creator requires Windows 11. Not available on this Windows version."
+        if ($sync["WPFTab4"]) { $sync["WPFTab4"].IsEnabled = $false }
+        Write-WinUtilLog -Level "INFO" -Component "UI" -Message "Win11 Creator tab hidden/disabled: detected Windows build $($osInfo.BuildNumber)."
+    }
 
     # Win11ISO Tab button handlers
     $sync["WPFWin11ISOBrowseButton"].Add_Click({

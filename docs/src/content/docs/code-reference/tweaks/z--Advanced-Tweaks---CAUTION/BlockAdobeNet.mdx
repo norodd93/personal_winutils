@@ -1,6 +1,6 @@
 ---
 title: "Adobe URL Block List - Enable"
-description: "Reduces user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs"
+description: "Adds an Adobe URL block list to the hosts file between WinUtil markers (idempotent). Downloads the list at apply time with timeout/size/basic content validation and flushes DNS; requires network access and trusts the remote source. May affect Adobe/licensing/network behavior. Undo removes only the WinUtil-marked section (with legacy fallback) and reports if nothing to remove."
 editUrl: false
 ---
 
@@ -8,30 +8,17 @@ editUrl: false
 This page is generated from [`config/tweaks.json`](https://github.com/ChrisTitusTech/winutil/blob/main/config/tweaks.json). Do not edit this page directly.
 :::
 
-```json title="config/tweaks.json"
+````json title="config/tweaks.json"
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe URL Block List - Enable",
-    "Description": "Reduces user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
+    "Description": "Adds an Adobe URL block list to the hosts file between WinUtil markers (idempotent). Downloads the list at apply time with timeout/size/basic content validation and flushes DNS; requires network access and trusts the remote source. May affect Adobe/licensing/network behavior. Undo removes only the WinUtil-marked section (with legacy fallback) and reports if nothing to remove.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "InvokeScript": [
-      "
-      $hostsUrl = Invoke-RestMethod -Uri https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts
-      Add-Content -Path \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\" -Value $hostsUrl
-
-      ipconfig /flushdns
-      Write-Host 'Added Adobe url block list from host file'
-      "
+      "      $hostsPath = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"\n      $markerStart = '# WinUtil Adobe URL Block List Start'\n      $markerEnd = '# WinUtil Adobe URL Block List End'\n      $hostsUrl = 'https://github.com/Ruddernation-Designs/Adobe-URL-Block-List/raw/refs/heads/master/hosts'\n      try {\n        if (-not (Test-Path -LiteralPath $hostsPath)) {\n          New-Item -Path $hostsPath -ItemType File -Force -ErrorAction Stop | Out-Null\n        }\n        $existing = Get-Content -LiteralPath $hostsPath -Raw -ErrorAction Stop\n        if ($null -eq $existing) { $existing = '' }\n        if ($existing -match [regex]::Escape($markerStart)) {\n          Write-WinUtilHost 'Adobe URL block list is already present in hosts file; skipping.'\n          Write-WinUtilLog -Level 'INFO' -Component 'BlockAdobe' -Message 'Adobe block list already present in hosts file.'\n          return\n        }\n\n        $content = $null\n        try {\n          $content = Invoke-RestMethod -Uri $hostsUrl -UseBasicParsing -TimeoutSec 30 -ErrorAction Stop\n        } catch {\n          $msg = \"Failed to download Adobe block list: $($_.Exception.Message). Ensure network access to GitHub is available, then retry.\"\n          Write-WinUtilLog -Level 'ERROR' -Component 'BlockAdobe' -Message $msg\n          throw $msg\n        }\n\n        $text = [string]$content\n        if ([string]::IsNullOrWhiteSpace($text)) { throw 'Downloaded Adobe block list was empty.' }\n        if ($text.Length -gt 1048576) { throw 'Downloaded Adobe block list is unexpectedly large; refusing to modify hosts file.' }\n\n        $lines = $text -split \"`r?`n\"\n        $valid = 0; $suspicious = 0\n        foreach ($line in $lines) {\n          $t = $line.Trim()\n          if ($t.Length -eq 0) { continue }\n          if ($t.StartsWith('#')) { $valid++; continue }\n          if ($t -match '^(0\\.0\\.0\\.0|127\\.0\\.0\\.1|::1)\\s+\\S+') { $valid++; continue }\n          if ($t -match '^<') { $suspicious++ }\n        }\n        if ($valid -lt 1 -or $suspicious -gt 0) {\n          throw 'Downloaded Adobe block list did not look like a valid hosts file; refusing to modify hosts file.'\n        }\n\n        $trimmed = $text.Trim()\n        $prefix = if ($existing.Length -gt 0 -and -not $existing.EndsWith(\"`n\")) { \"`r`n\" } else { '' }\n        $block = \"$prefix$markerStart`r`n$trimmed`r`n$markerEnd`r`n\"\n        Add-Content -LiteralPath $hostsPath -Value $block -Encoding ascii -ErrorAction Stop\n        try { ipconfig /flushdns | Out-Null } catch { Write-WinUtilLog -Level 'WARN' -Component 'BlockAdobe' -Message \"DNS flush failed after hosts update: $($_.Exception.Message)\" }\n        Write-WinUtilHost 'Added Adobe URL block list to hosts file.'\n        Write-WinUtilLog -Level 'INFO' -Component 'BlockAdobe' -Message 'Added Adobe URL block list to hosts file.'\n      } catch {\n        Write-WinUtilLog -Level 'ERROR' -Component 'BlockAdobe' -Message \"Failed to add Adobe block list: $($_.Exception.Message)\"\n        throw\n      }\n"
     ],
     "UndoScript": [
-      "
-      Set-Content \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\" (
-          (Get-Content \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\") -join \"`n\" -replace '(?s)#New Ver.*', ''
-      )
-
-      ipconfig /flushdns
-      Write-Host 'Removed Adobe url block list from host file'
-      "
+      "      $hostsPath = \"$Env:SystemRoot\\System32\\drivers\\etc\\hosts\"\n      try {\n        if (-not (Test-Path -LiteralPath $hostsPath)) {\n          Write-WinUtilHost 'Hosts file not found; nothing to remove.'\n          return\n        }\n        $text = Get-Content -LiteralPath $hostsPath -Raw -ErrorAction Stop\n        if ($null -eq $text) { $text = '' }\n        $pattern = '(?s)\\r?\\n?# WinUtil Adobe URL Block List Start.*?# WinUtil Adobe URL Block List End\\r?\\n?'\n        $newText = [regex]::Replace($text, $pattern, [string]::Empty)\n        if ($newText -eq $text) {\n          $normalized = $text -replace \"`r`n\", \"`n\"\n          $newText = [regex]::Replace($normalized, '(?s)\\r?\\n?#New Ver.*$', [string]::Empty)\n        }\n        if ($newText -eq $text) {\n          Write-WinUtilHost 'No WinUtil Adobe URL block list markers found in hosts file; nothing to remove.'\n          Write-WinUtilLog -Level 'INFO' -Component 'BlockAdobe' -Message 'No Adobe block list markers found; nothing to remove.'\n          return\n        }\n        Set-Content -LiteralPath $hostsPath -Value $newText -Encoding ascii -ErrorAction Stop\n        try { ipconfig /flushdns | Out-Null } catch { Write-WinUtilLog -Level 'WARN' -Component 'BlockAdobe' -Message \"DNS flush failed after hosts restore: $($_.Exception.Message)\" }\n        Write-WinUtilHost 'Removed Adobe URL block list from hosts file.'\n        Write-WinUtilLog -Level 'INFO' -Component 'BlockAdobe' -Message 'Removed Adobe URL block list from hosts file.'\n      } catch {\n        Write-WinUtilLog -Level 'ERROR' -Component 'BlockAdobe' -Message \"Failed to remove Adobe block list: $($_.Exception.Message)\"\n        throw\n      }\n"
     ],
   }
-```
+````

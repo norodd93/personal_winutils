@@ -8,7 +8,7 @@ editUrl: false
 This page is generated from [`functions/private/Invoke-WinUtilInstallPSProfile.ps1`](https://github.com/ChrisTitusTech/winutil/blob/main/functions/private/Invoke-WinUtilInstallPSProfile.ps1). Do not edit this page directly.
 :::
 
-```powershell title="functions/private/Invoke-WinUtilInstallPSProfile.ps1"
+````powershell title="functions/private/Invoke-WinUtilInstallPSProfile.ps1"
 function Get-WinUtilPowerShell7Path {
     $command = Get-Command pwsh -CommandType Application -ErrorAction SilentlyContinue
     if ($command) { return $command.Source }
@@ -77,4 +77,4 @@ function Invoke-WinUtilInstallPSProfile {
 
     Write-WinUtilLog -Component "Feature" -Message "CTT PowerShell profile installed. Open a new PowerShell 7 session to use it."
 }
-```
+````
