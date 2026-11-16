@@ -1,4 +1,4 @@
-# WinUtil
+# Neds Personal WinUtils
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 ![Platform: Windows 11](https://img.shields.io/badge/platform-Windows%2011-0078D6)
