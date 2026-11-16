@@ -169,8 +169,7 @@ if (`$launch.Headless) { `$env:WINUTIL_HEADLESS_CHILD = '1' }
 if (`$launch.ScriptPath) {
     & `$launch.ScriptPath @invokeParameters
 } else {
-    `$remoteScript = [ScriptBlock]::Create((Invoke-RestMethod 'https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1'))
-    & `$remoteScript @invokeParameters
+`$remoteScript = [ScriptBlock]::Create((Invoke-RestMethod 'https://github.com/norodd93/personal_winutils/releases/latest/download/winutil.ps1'))
 }
 "@
 
