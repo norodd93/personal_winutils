@@ -25,6 +25,16 @@ BeforeAll {
     }, $true)
     $script:provisionedRemovalScriptBlock = $ps5CommandAssignment.Right.Expression.ScriptBlock.GetScriptBlock()
 
+    $removalSourcePath = Join-Path $script:repoRoot "functions\private\Remove-WinUtilAPPX.ps1"
+    $removalSourceAst = [System.Management.Automation.Language.Parser]::ParseFile($removalSourcePath, [ref]$tokens, [ref]$parseErrors)
+    $removalCommandAssignment = $removalSourceAst.Find({
+        param($node)
+        $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and
+            $node.Left -is [System.Management.Automation.Language.VariableExpressionAst] -and
+            $node.Left.VariablePath.UserPath -eq "ps5Command"
+    }, $true)
+    $script:appxRemovalScriptBlock = $removalCommandAssignment.Right.Expression.ScriptBlock.GetScriptBlock()
+
     $installSourcePath = Join-Path $script:repoRoot "functions\private\Install-WinUtilAPPX.ps1"
     $installSourceAst = [System.Management.Automation.Language.Parser]::ParseFile($installSourcePath, [ref]$tokens, [ref]$parseErrors)
     $installCommandAssignment = $installSourceAst.Find({
@@ -289,8 +299,24 @@ Describe "Get installed AppX selection" {
 
 Describe "Remove-WinUtilAPPX" {
     BeforeEach {
+        $global:LASTEXITCODE = 0
         Mock Write-Host { }
         Mock Write-WinUtilLog { }
+        Mock powershell.exe {
+            $global:LASTEXITCODE = 0
+        }
+    }
+
+    It "removes packages through Windows PowerShell so the Appx module can load" {
+        Remove-WinUtilAPPX -Name "Microsoft.Xbox*"
+
+        Should -Invoke -CommandName powershell.exe -Times 1 -Exactly
+        Should -Invoke -CommandName Write-WinUtilLog -Times 0 -Exactly -ParameterFilter {
+            $Level -eq "ERROR"
+        }
+    }
+
+    It "removes matching installed AppX packages in the child process" {
         Mock Get-AppxPackage {
             @(
                 [pscustomobject]@{
@@ -304,10 +330,8 @@ Describe "Remove-WinUtilAPPX" {
             )
         }
         Mock Remove-AppxPackage { }
-    }
 
-    It "removes matching installed AppX packages" {
-        Remove-WinUtilAPPX -Name "Microsoft.Xbox*"
+        & $script:appxRemovalScriptBlock "Microsoft.Xbox*"
 
         Should -Invoke -CommandName Get-AppxPackage -Times 1 -Exactly -ParameterFilter {
             $Name -eq "*Microsoft.Xbox**" -and $AllUsers -eq $true
@@ -319,15 +343,67 @@ Describe "Remove-WinUtilAPPX" {
         }
     }
 
-    It "logs installed AppX removal failures" {
+    It "surfaces child-process removal failures" {
+        Mock Get-AppxPackage {
+            [pscustomobject]@{
+                Name = $Name
+                PackageFullName = "$Name.FullName"
+            }
+        }
         Mock Remove-AppxPackage { throw "Removal failed" }
+
+        { & $script:appxRemovalScriptBlock "Example.Package" } |
+            Should -Throw "*Failed to remove AppX package *Example.Package*.FullName: Removal failed (all users: Removal failed)*"
+    }
+
+    It "falls back to removing for the current user when -AllUsers fails" {
+        Mock Get-AppxPackage {
+            [pscustomobject]@{
+                Name = $Name
+                PackageFullName = "$Name.FullName"
+            }
+        }
+        Mock Remove-AppxPackage { throw "All users removal failed" } -ParameterFilter { $AllUsers }
+        Mock Remove-AppxPackage { } -ParameterFilter { -not $AllUsers }
+
+        $result = @(& $script:appxRemovalScriptBlock "Example.Package")
+
+        $result | Should -HaveCount 1
+        $result[0] | Should -Be "Removed *Example.Package*.FullName for the current user only; -AllUsers failed: All users removal failed"
+        Should -Invoke -CommandName Remove-AppxPackage -Times 1 -Exactly -ParameterFilter { $AllUsers -eq $true }
+        Should -Invoke -CommandName Remove-AppxPackage -Times 1 -Exactly -ParameterFilter { -not $AllUsers }
+    }
+
+    It "logs the current-user fallback as a warning" {
+        Mock powershell.exe {
+            $global:LASTEXITCODE = 0
+            "Removed Example.Package.FullName for the current user only; -AllUsers failed: 0x80070002"
+        }
+
+        { Remove-WinUtilAPPX -Name "Example.Package" } | Should -Not -Throw
+
+        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq "WARN" -and
+                $Component -eq "AppX" -and
+                $Message -eq "Removed Example.Package.FullName for the current user only; -AllUsers failed: 0x80070002"
+        }
+        Should -Invoke -CommandName Write-WinUtilLog -Times 0 -Exactly -ParameterFilter {
+            $Level -eq "ERROR"
+        }
+    }
+
+    It "logs child-process failures without throwing" {
+        Mock powershell.exe {
+            $global:LASTEXITCODE = 1
+            "Failed to remove AppX package Example.Package.FullName: Removal failed"
+        }
 
         { Remove-WinUtilAPPX -Name "Example.Package" } | Should -Not -Throw
 
         Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
             $Level -eq "ERROR" -and
                 $Component -eq "AppX" -and
-                $Message -eq "Failed to remove AppX package *Example.Package*.FullName: Removal failed"
+                $Message -eq "Failed to remove AppX packages matching Example.Package`: Failed to remove AppX package Example.Package.FullName: Removal failed"
         }
     }
 }
@@ -571,13 +647,7 @@ Describe "Invoke-WPFAppxRemoval" {
         Mock Step-WinUtilJob { }
         Mock Stop-Process { }
         Mock Set-ItemProperty { }
-        Mock Get-AppxPackage {
-            [pscustomobject]@{
-                Name = $Name
-                PackageFullName = "$Name.FullName"
-            }
-        }
-        Mock Remove-AppxPackage { }
+        Mock Remove-WinUtilAPPX { }
         Mock Remove-WinUtilProvisionedAPPX { }
         Mock Get-Package {
             [pscustomobject]@{
@@ -634,11 +704,8 @@ Describe "Invoke-WPFAppxRemoval" {
         $jobParameters = $script:capturedAppxRemovalParameters
         & $script:capturedAppxRemovalScriptBlock @jobParameters
 
-        Should -Invoke -CommandName Get-AppxPackage -Times 1 -Exactly -ParameterFilter {
-            $Name -eq "*Example.Package*" -and $AllUsers -eq $true
-        }
-        Should -Invoke -CommandName Remove-AppxPackage -Times 1 -Exactly -ParameterFilter {
-            $Package -eq "*Example.Package*.FullName"
+        Should -Invoke -CommandName Remove-WinUtilAPPX -Times 1 -Exactly -ParameterFilter {
+            $Name -eq "Example.Package"
         }
         Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 1 -Exactly -ParameterFilter {
             $PackageList.Count -eq 1 -and $PackageList[0] -eq "Example.Package"
@@ -710,7 +777,7 @@ Describe "Invoke-WPFAppxRemoval" {
         Should -Invoke -CommandName Uninstall-Package -Times 1 -Exactly -ParameterFilter {
             $InputObject.Name -eq "Microsoft Teams Meeting Add-in" -and $Force -eq $true
         }
-        Should -Invoke -CommandName Remove-AppxPackage -Times 3 -Exactly
+        Should -Invoke -CommandName Remove-WinUtilAPPX -Times 3 -Exactly
         Should -Invoke -CommandName Remove-WinUtilProvisionedAPPX -Times 1 -Exactly -ParameterFilter {
             $PackageList.Count -eq 3 -and
             $PackageList[0] -eq "Microsoft.XboxGamingOverlay" -and
