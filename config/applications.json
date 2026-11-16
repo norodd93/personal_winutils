@@ -567,6 +567,15 @@
     "winget": "Rufus.Rufus",
     "foss": true
   },
+  "rustdesk": {
+    "category": "Utilities",
+    "choco": "rustdesk",
+    "content": "Rust Desk",
+    "description": "A remote desktop software, the open source TeamViewer alternative, works out of the box, no configuration required. You have full control of your data, with no concerns about security. You can use our public rendezvous/relay server, or self-hosting, or write your own server.",
+    "link": "https://rustdesk.com/",
+    "winget": "na",
+    "foss": true
+},
   "sdio": {
     "category": "Utilities",
     "choco": "sdio",
