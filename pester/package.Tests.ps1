@@ -16,12 +16,14 @@ BeforeAll {
     }
     # The CLI path is what these tests cover; the module path is verified against real winget
     function Step-WinUtilJob { param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide) }
-    function Write-WinUtilLog { }
+    function Write-WinUtilLog { param($Message, $Level, $Component) }
 }
 
 Describe "Get-WinUtilSelectedPackages" {
     BeforeEach {
         Mock Invoke-WPFUIThread { }
+        Mock Write-Warning { }
+        Mock Write-WinUtilLog { }
     }
 
     It "uses winget IDs when winget is preferred" {
@@ -70,7 +72,7 @@ Describe "Get-WinUtilSelectedPackages" {
         @($both.Choco) | Should -Be @('github-desktop', 'git')
     }
 
-    It "skips blank, na, and missing package IDs" {
+    It "falls back to a Choco-only package and skips entries with no usable ID" {
         $packages = @(
             [pscustomobject]@{ winget = ""; choco = "" }
             [pscustomobject]@{ winget = "na"; choco = "na" }
@@ -81,7 +83,10 @@ Describe "Get-WinUtilSelectedPackages" {
         $result = Get-WinUtilSelectedPackages -PackageList $packages -Preference "Winget"
 
         @($result["Winget"]).Count | Should -Be 0
-        @($result["Choco"]).Count | Should -Be 0
+        (@($result["Choco"]) -join "|") | Should -Be "only-choco"
+        # No-ID entries are warned about, and the Choco fallback is reported too.
+        Should -Invoke Write-Warning -Times 3 -Exactly
+        Should -Invoke Write-WinUtilLog -Times 4 -Exactly -ParameterFilter { $Level -eq 'WARN' }
     }
 
     It "deduplicates package IDs" {

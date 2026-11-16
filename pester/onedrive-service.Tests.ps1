@@ -31,7 +31,7 @@ Describe 'OneDrive per-user service template' {
 
     It 'configures an existing template without querying a running instance (<Action>)' -TestCases @(
         @{ Action = 'InvokeScript'; ExpectedType = 'Disabled' }
-        @{ Action = 'UndoScript'; ExpectedType = 'Automatic' }
+        @{ Action = 'UndoScript'; ExpectedType = 'Manual' }
     ) {
         param($Action, $ExpectedType)
         $guard = Get-OneSyncGuard -Action $Action

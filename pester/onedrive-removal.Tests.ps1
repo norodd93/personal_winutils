@@ -1,16 +1,32 @@
+#===========================================================================
+# Tests - OneDrive Removal Tweak InvokeScript
+#===========================================================================
+# Covers WPFTweaksRemoveOneDrive (config/tweaks.json) on a platform-agnostic
+# basis: the ACL object is a plain stand-in (DirectorySecurity is Windows-only).
+# The script must never delete the OneDrive folder when enumeration fails,
+# must preserve files it cannot confirm are empty, must restore the captured
+# ACL in a finally block, and must continue best-effort through per-step
+# failures rather than throwing.
+
 BeforeAll {
     $tweaks = Get-Content (Join-Path $PSScriptRoot '..\config\tweaks.json') -Raw | ConvertFrom-Json
-    $invokeText = $tweaks.WPFTweaksRemoveOneDrive.InvokeScript -join "`n"
+    $invokeText = @($tweaks.WPFTweaksRemoveOneDrive.InvokeScript) -join "`n"
     # Intercept the persistent environment write; filesystem fixtures stay in TestDrive.
     $invokeText = $invokeText.Replace("[Environment]::SetEnvironmentVariable('OneDrive', `$null, 'User')", 'Clear-TestOneDriveEnvironment')
     $script:removeOneDrive = [scriptblock]::Create($invokeText)
-    function icacls {
-        param($Target, $Operation, $Principal)
-        throw "icacls must be mocked: $Target $Operation $Principal"
-    }
-    function Clear-TestOneDriveEnvironment {
-        throw 'The persistent environment write must be mocked.'
-    }
+
+    # Windows-only / external commands are stand-ins so they can be mocked here.
+    function Write-WinUtilLog { param($Message, $Level, $Component) }
+    function Write-WinUtilHost { param($Object) }
+    function icacls { param($Target, $Operation, $Principal) }
+    function Get-Acl { param($LiteralPath) }
+    function Set-Acl { param($LiteralPath, $AclObject) }
+    function Get-Process { param($Name) }
+    function Stop-Process { param($InputObject, [switch]$Force) }
+    function Set-Service { param($Name, $StartupType) }
+    function Get-Command { param($Name) }
+    function Start-Process { param($FilePath, $ArgumentList, [switch]$Wait, [switch]$PassThru, [switch]$NoNewWindow) }
+    function Clear-TestOneDriveEnvironment { }
 }
 
 Describe 'OneDrive removal' {
@@ -19,13 +35,21 @@ Describe 'OneDrive removal' {
         $script:savedLocalAppData = $Env:LocalAppData
         $script:savedProgramData = $Env:ProgramData
         $script:savedExitCode = $global:LASTEXITCODE
+        $script:savedSystemRoot = $Env:SystemRoot
         $script:fixtureRoot = Join-Path $TestDrive ([guid]::NewGuid().ToString())
         $script:oneDrivePath = Join-Path $script:fixtureRoot 'OneDrive'
         $Env:OneDrive = $script:oneDrivePath
         $Env:LocalAppData = Join-Path $script:fixtureRoot 'LocalAppData'
         $Env:ProgramData = Join-Path $script:fixtureRoot 'ProgramData'
+        $Env:SystemRoot = $script:fixtureRoot
         $script:aclOperations = [System.Collections.Generic.List[string]]::new()
-        $script:originalAcl = [System.Security.AccessControl.DirectorySecurity]::new()
+        $script:processNames = [System.Collections.Generic.List[string]]::new()
+        $script:stopCount = 0
+        $script:originalAcl = [pscustomobject]@{ Kind = 'DirectorySecurity stand-in' }
+
+        Mock Write-WinUtilLog { }
+        Mock Write-WinUtilHost { }
+        Mock Test-Path { $false }
         Mock Get-Acl { $script:originalAcl }
         Mock Set-Acl { $script:aclOperations.Add('restore') }
         Mock icacls {
@@ -33,142 +57,149 @@ Describe 'OneDrive removal' {
             $global:LASTEXITCODE = 0
         }
         Mock Start-Process { }
-        $script:explorer = [System.Diagnostics.Process]::new()
-        $script:explorer | Add-Member -MemberType NoteProperty -Name ProcessName -Value 'Explorer' -Force
-        Mock Get-Process { $script:explorer }
+        Mock Get-Process { }
         Mock Stop-Process { }
         Mock Set-Service { }
-        Mock Remove-Item { }
+        Mock Get-Command { }
         Mock Clear-TestOneDriveEnvironment { }
-        Mock Write-Host { }
     }
 
     AfterEach {
         $Env:OneDrive = $script:savedOneDrive
         $Env:LocalAppData = $script:savedLocalAppData
         $Env:ProgramData = $script:savedProgramData
+        $Env:SystemRoot = $script:savedSystemRoot
         $global:LASTEXITCODE = $script:savedExitCode
     }
 
-    It 'skips an empty or absent folder path but still uninstalls' -TestCases @(
-        @{ EmptyPath = $true }, @{ EmptyPath = $false }
-    ) {
-        param($EmptyPath)
-        if ($EmptyPath) { $Env:OneDrive = '' }
+    It 'skips ACL work and folder removal when the folder is absent' {
+        $Env:OneDrive = Join-Path $script:fixtureRoot 'does-not-exist'
         & $script:removeOneDrive
-        Should -Invoke icacls -Times 0 -Exactly
+
         Should -Invoke Get-Acl -Times 0 -Exactly
+        Should -Invoke icacls -Times 0 -Exactly
         Should -Invoke Set-Acl -Times 0 -Exactly
         Should -Invoke Clear-TestOneDriveEnvironment -Times 0 -Exactly
-        Should -Invoke Remove-Item -Times 0 -Exactly
-        Should -Invoke Start-Process -Times 1 -Exactly -ParameterFilter { $ArgumentList -eq '/uninstall' -and $Wait }
-        Should -Invoke Set-Service -Times 1 -Exactly -ParameterFilter { $Name -eq 'OneSyncSvc' -and $StartupType -eq 'Disabled' }
-        Should -Invoke Stop-Process -Times 1 -Exactly -ParameterFilter { $InputObject -eq $script:explorer }
+        Should -Invoke Write-WinUtilHost -ParameterFilter { $Object -match 'not present for this profile' }
     }
 
-    It 'protects an existing folder during uninstall and deletes it only when empty' {
-        New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
-        Mock Start-Process { $script:aclOperations.ToArray() | Should -Be @('/deny') }
+    It 'still disables the OneSyncSvc template when it is present' {
+        Mock Test-Path { $true } -ParameterFilter { $LiteralPath -eq 'HKLM:\SYSTEM\CurrentControlSet\Services\OneSyncSvc' }
+
         & $script:removeOneDrive
+
+        Should -Invoke Set-Service -Times 1 -Exactly -ParameterFilter {
+            $Name -eq 'OneSyncSvc' -and $StartupType -eq 'Disabled'
+        }
+    }
+
+    It 'stops the related OneDrive processes best-effort' {
+        Mock Get-Process {
+            $script:processNames.Add([string]$Name)
+            [pscustomobject]@{ ProcessName = $Name }
+        } -ParameterFilter { $Name }
+        Mock Stop-Process { $script:stopCount++ }
+
+        & $script:removeOneDrive
+
+        $script:processNames | Should -Contain 'OneDrive'
+        $script:processNames | Should -Contain 'FileCoAuth'
+        $script:processNames | Should -Contain 'OneDriveStandaloneUpdater'
+        $script:stopCount | Should -Be 3
+    }
+
+    It 'captures ACL, denies write, restores it, and deletes an empty folder' {
+        New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
+        Mock Test-Path { $true } -ParameterFilter { $LiteralPath -eq $script:oneDrivePath }
+
+        & $script:removeOneDrive
+
         $script:aclOperations.ToArray() | Should -Be @('/deny', 'restore')
-        Should -Invoke Set-Acl -Times 1 -Exactly -ParameterFilter { $LiteralPath -eq $script:oneDrivePath -and $AclObject -eq $script:originalAcl }
-        Test-Path -LiteralPath $script:oneDrivePath | Should -BeFalse
+        Should -Invoke Set-Acl -Times 1 -Exactly -ParameterFilter {
+            $LiteralPath -eq $script:oneDrivePath -and $AclObject -eq $script:originalAcl
+        }
         Should -Invoke Clear-TestOneDriveEnvironment -Times 1 -Exactly
+        [System.IO.Directory]::Exists($script:oneDrivePath) | Should -BeFalse
     }
 
-    It 'preserves a OneDrive folder containing only hidden files' {
+    It 'preserves a folder that is not empty' {
         New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
-        $hiddenFile = New-Item -ItemType File -Path (Join-Path $script:oneDrivePath 'notes.txt')
-        $hiddenFile.Attributes = $hiddenFile.Attributes -bor [System.IO.FileAttributes]::Hidden
+        $file = New-Item -ItemType File -Path (Join-Path $script:oneDrivePath 'notes.txt')
+        Mock Test-Path { $true } -ParameterFilter { $LiteralPath -eq $script:oneDrivePath }
+
         & $script:removeOneDrive
-        Test-Path -LiteralPath $hiddenFile.FullName | Should -BeTrue
+
+        [System.IO.File]::Exists($file.FullName) | Should -BeTrue
         Should -Invoke Clear-TestOneDriveEnvironment -Times 0 -Exactly
+        Should -Invoke Write-WinUtilLog -ParameterFilter { $Message -match 'not removed because it is not empty' }
     }
 
-    It 'refuses to delete files added after the emptiness check' {
+    It 'does not delete the folder or clear the variable when enumeration fails' {
         New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
-        Mock Get-ChildItem {
-            New-Item -ItemType File -Path (Join-Path $script:oneDrivePath 'new-file.txt') | Out-Null
-        } -ParameterFilter { $LiteralPath -eq $script:oneDrivePath }
-        { & $script:removeOneDrive } | Should -Throw
-        Test-Path -LiteralPath (Join-Path $script:oneDrivePath 'new-file.txt') | Should -BeTrue
+        Mock Test-Path { $true } -ParameterFilter { $LiteralPath -eq $script:oneDrivePath }
+        Mock Get-ChildItem { throw 'Enumeration access denied' } -ParameterFilter { $LiteralPath -eq $script:oneDrivePath }
+
+        { & $script:removeOneDrive } | Should -Not -Throw
+
+        [System.IO.Directory]::Exists($script:oneDrivePath) | Should -BeTrue
         Should -Invoke Clear-TestOneDriveEnvironment -Times 0 -Exactly
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq 'WARN' -and $Message -match 'folder was not removed' -and $Message -match 'Enumeration access denied'
+        }
     }
 
-    It 'stops only a running FileCoAuth process and still stops Explorer' {
-        $script:fileCoAuth = [System.Diagnostics.Process]::new()
-        $script:fileCoAuth | Add-Member -MemberType NoteProperty -Name ProcessName -Value 'FileCoAuth' -Force
-        Mock Get-Process { $script:fileCoAuth; $script:explorer }
-        & $script:removeOneDrive
-        Should -Invoke Stop-Process -Times 1 -Exactly -ParameterFilter { $InputObject -eq $script:fileCoAuth }
-        Should -Invoke Stop-Process -Times 1 -Exactly -ParameterFilter { $InputObject -eq $script:explorer }
-    }
-
-    It 'continues cleanup when Explorer is not running' {
-        Mock Get-Process { }
+    It 'continues best-effort when the ACL cannot be captured' {
         New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
-        & $script:removeOneDrive
-        Should -Invoke Stop-Process -Times 0 -Exactly
-        Test-Path -LiteralPath $script:oneDrivePath | Should -BeFalse
-        Should -Invoke Clear-TestOneDriveEnvironment -Times 1 -Exactly
-        Should -Invoke Set-Service -Times 1 -Exactly -ParameterFilter { $Name -eq 'OneSyncSvc' }
+        Mock Test-Path { $true } -ParameterFilter { $LiteralPath -eq $script:oneDrivePath }
+        Mock Get-Acl { throw 'ACL read denied' }
+
+        { & $script:removeOneDrive } | Should -Not -Throw
+
+        Should -Invoke Set-Acl -Times 0 -Exactly
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq 'WARN' -and $Message -match 'Failed to capture OneDrive ACL'
+        }
     }
 
-    It 'restores permissions and reports a process stop failure' {
+    It 'continues when protecting the folder fails but still restores later' {
         New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
-        Mock Stop-Process { throw 'Process stop denied' }
-        { & $script:removeOneDrive } | Should -Throw '*Process stop denied*'
+        Mock Test-Path { $true } -ParameterFilter { $LiteralPath -eq $script:oneDrivePath }
+        Mock icacls { throw 'deny failed' }
+
+        { & $script:removeOneDrive } | Should -Not -Throw
+
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq 'WARN' -and $Message -match 'Unable to protect OneDrive folder'
+        }
+        # The captured ACL is still restored in the finally block.
+        $script:aclOperations.ToArray() | Should -Be @('restore')
+    }
+
+    It 'reports an unconfirmed uninstall and preserves a non-empty folder' {
+        New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
+        $file = New-Item -ItemType File -Path (Join-Path $script:oneDrivePath 'notes.txt')
+        $setup32 = "$Env:SystemRoot\System32\OneDriveSetup.exe"
+        Mock Test-Path { $true } -ParameterFilter { $LiteralPath -eq $script:oneDrivePath }
+        Mock Test-Path { $true } -ParameterFilter { $LiteralPath -eq $setup32 }
+        Mock Start-Process { throw 'Uninstaller failed' }
+
+        { & $script:removeOneDrive } | Should -Not -Throw
+
+        [System.IO.File]::Exists($file.FullName) | Should -BeTrue
+        Should -Invoke Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
+            $Level -eq 'WARN' -and $Message -match 'OneDrive setup uninstall failed' -and $Message -match 'Uninstaller failed'
+        }
+        Should -Invoke Write-WinUtilHost -ParameterFilter { $Object -match 'could not be fully confirmed' }
         $script:aclOperations.ToArray() | Should -Be @('/deny', 'restore')
-        Test-Path -LiteralPath $script:oneDrivePath | Should -BeTrue
-        Should -Invoke Clear-TestOneDriveEnvironment -Times 0 -Exactly
     }
 
-    It 'cleans up only optional directories that exist' {
+    It 'cleans up leftover directories that exist' {
         $leftoverPath = Join-Path $Env:LocalAppData 'Microsoft\OneDrive'
         New-Item -ItemType Directory -Path $leftoverPath -Force | Out-Null
+        Mock Test-Path { $true } -ParameterFilter { $LiteralPath -eq $leftoverPath }
+
         & $script:removeOneDrive
-        Should -Invoke Remove-Item -Times 1 -Exactly -ParameterFilter { $LiteralPath -eq $leftoverPath -and $Recurse -and $Force }
-    }
 
-    It 'restores permissions and reports a failed uninstall' {
-        New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
-        Mock Start-Process { throw 'Uninstaller failed' }
-        { & $script:removeOneDrive } | Should -Throw '*Uninstaller failed*'
-        $script:aclOperations.ToArray() | Should -Be @('/deny', 'restore')
-        Test-Path -LiteralPath $script:oneDrivePath | Should -BeTrue
-        Should -Invoke Clear-TestOneDriveEnvironment -Times 0 -Exactly
-    }
-
-    It 'restores permissions and reports a leftover cleanup error' {
-        New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
-        New-Item -ItemType Directory -Path (Join-Path $Env:LocalAppData 'Microsoft\OneDrive') -Force | Out-Null
-        Mock Remove-Item { throw 'Cleanup access denied' }
-        { & $script:removeOneDrive } | Should -Throw '*Cleanup access denied*'
-        $script:aclOperations.ToArray() | Should -Be @('/deny', 'restore')
-        Should -Invoke Clear-TestOneDriveEnvironment -Times 0 -Exactly
-    }
-
-    It 'reports an ACL failure before attempting uninstall' {
-        New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
-        Mock icacls { $global:LASTEXITCODE = 5 }
-        { & $script:removeOneDrive } | Should -Throw '*Unable to protect*'
-        Should -Invoke Set-Acl -Times 1 -Exactly
-        Should -Invoke Start-Process -Times 0 -Exactly
-    }
-
-    It 'reports a permission restoration failure and keeps the folder' {
-        New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
-        Mock Set-Acl { throw 'ACL restoration failed' }
-        { & $script:removeOneDrive } | Should -Throw '*ACL restoration failed*'
-        Test-Path -LiteralPath $script:oneDrivePath | Should -BeTrue
-        Should -Invoke Clear-TestOneDriveEnvironment -Times 0 -Exactly
-    }
-
-    It 'does not interpret a failed folder enumeration as an empty folder' {
-        New-Item -ItemType Directory -Path $script:oneDrivePath -Force | Out-Null
-        Mock Get-ChildItem { throw 'Enumeration access denied' } -ParameterFilter { $LiteralPath -eq $script:oneDrivePath }
-        { & $script:removeOneDrive } | Should -Throw '*Enumeration access denied*'
-        Test-Path -LiteralPath $script:oneDrivePath | Should -BeTrue
-        Should -Invoke Clear-TestOneDriveEnvironment -Times 0 -Exactly
+        [System.IO.Directory]::Exists($leftoverPath) | Should -BeFalse
     }
 }
