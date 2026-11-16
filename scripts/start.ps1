@@ -1,6 +1,6 @@
 <#
 .NOTES
-    Author         : Chris Titus @christitustech
+    Author         : Ned @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
     Version        : #{replaceme}

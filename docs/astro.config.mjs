@@ -10,7 +10,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'WinUtil',
-			description: "Chris Titus Tech's Windows Utility — install apps, apply tweaks, run fixes, and manage Windows from one place.",
+			description: "Ned's Windows Utility — install apps, apply tweaks, run fixes, and manage Windows from one place.",
 			logo: {
 				src: './src/assets/branding/navlogo.png',
 				replacesTitle: true,

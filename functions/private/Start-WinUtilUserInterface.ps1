@@ -471,7 +471,7 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
         Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
 
         $authorInfo = @"
-<a href="https://github.com/sponsors/ChrisTitusTech">Current sponsors for ChrisTitusTech:</a>
+<a href="https://github.com/sponsors/ChrisTitusTech">Current sponsors for Ned:</a>
 "@
         $authorInfo += "`n"
         try {
