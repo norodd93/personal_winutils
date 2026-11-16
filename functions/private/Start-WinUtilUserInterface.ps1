@@ -401,11 +401,6 @@ function Start-WinUtilUserInterface {
         $sync["Form"].MaxHeight = [Double]::PositiveInfinity
     })
 
-    Measure-WinUtilStep -Scope "UI" -Name "build nav logo" -ScriptBlock {
-        $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
-        $NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-Null
-    }
-
     $sync["Form"].Add_Activated({
         Set-WinUtilTaskbaritem -overlay "logo"
     })
