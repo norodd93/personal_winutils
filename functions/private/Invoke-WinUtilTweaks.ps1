@@ -133,7 +133,13 @@ function Invoke-WinUtilTweaks {
     if ($sync.configs.tweaks.$CheckBox.$($values.ScriptType)) {
         foreach ($scr in $sync.configs.tweaks.$CheckBox.$($values.ScriptType)) {
             $Scriptblock = [scriptblock]::Create($scr)
-            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+            try {
+                Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+            } catch {
+                # Invoke-WinUtilScript already logged the error and incremented the
+                # per-runspace error counter. Swallow it here so the remaining tweak
+                # steps still run and the error is reported in the summary below.
+            }
         }
     }
 

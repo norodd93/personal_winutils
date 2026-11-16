@@ -43,9 +43,8 @@ function Invoke-WinUtilFeatureInstall ($CheckBox) {
 
     if ($featureFailed -or $scriptFailed) {
         $detail = if ($featureFailed) { "$enabledCount/$totalFeatures optional feature(s) enabled" } else { "one or more scripts failed" }
-        Write-WinUtilLog -Level "ERROR" -Component "Feature" -Message "Feature action failed or partially applied: $CheckBox ($detail)"
-        throw "Feature action failed or partially applied for $CheckBox."
+        Write-WinUtilLog -Level "WARN" -Component "Feature" -Message "Feature action completed with partial failures: $CheckBox ($detail)"
+    } else {
+        Write-WinUtilLog -Component "Feature" -Message "Feature action completed: $CheckBox"
     }
-
-    Write-WinUtilLog -Component "Feature" -Message "Feature action completed: $CheckBox"
 }

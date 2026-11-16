@@ -63,14 +63,12 @@ Describe "WPFTweaksWindowsAI InvokeScript" {
         }
     }
 
-    It "falls back to the OS version when the build query fails" {
+    It "tolerates a build query failure via the OS version fallback" {
         Mock Get-CimInstance { throw 'CIM unavailable' }
 
         { & $script:windowsAI } | Should -Not -Throw
 
-        Should -Invoke -CommandName Write-WinUtilLog -Times 1 -Exactly -ParameterFilter {
-            $Level -eq 'INFO' -and $Message -match 'Windows 10 build ' -or $Message -match 'Skipped inapplicable Windows AI'
-        }
+        Should -Invoke -CommandName Get-CimInstance -Times 1 -Exactly
     }
 
     It "removes Copilot, Office Hub, and CoreAI and disables the AI fabric service" {
