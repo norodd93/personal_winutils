@@ -37,7 +37,13 @@ Also included:
 
 ## Getting started
 
-This repository has no releases of its own, so build the script from source. Clone it with Git, or download the ZIP from GitHub.
+Run it straight from PowerShell:
+
+```powershell
+irm https://github.com/norodd93/personal_winutils/releases/latest/download/winutil.ps1 | iex
+```
+
+Or clone the repository and build the script yourself:
 
 ```powershell
 git clone https://github.com/norodd93/personal_winutils.git
